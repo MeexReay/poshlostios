@@ -1,5 +1,6 @@
 {
     "repositories": [
-        "https://poshlostios.meex.lol/app"
+        "https://poshlostios.meex.lol/app",
+        "https://raw.githubusercontent.com/MeexReay/poshlostios/refs/heads/main/app"
     ]
 }
