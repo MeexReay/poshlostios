@@ -1,0 +1,7 @@
+{
+    "prompt": "[posh {cwd}]$ ",
+    "startup": [
+        "hello",
+        "meow"
+    ]
+}

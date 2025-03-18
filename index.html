@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PoshlostiOS</title>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/icon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/icon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/icon/favicon-16x16.png">
+        <link rel="manifest" href="/icon/site.webmanifest">
+
+        <style>
+            @font-face {
+                font-family: 'terminus';
+                src: url('font/terminus.ttf'); /* Legacy iOS */
+            }
+
+            :root {
+                --BLACK: rgb(12,12,12);
+                --DARK_BLUE: rgb(0,55,218);
+                --DARK_GREEN: rgb(19,161,14);
+                --DARK_CYAN: rgb(58,150,221);
+                --DARK_RED: rgb(197,15,31);
+                --DARK_MAGENTA: rgb(136,23,152);
+                --DARK_YELLOW: rgb(193,156,0);
+                --DARK_WHITE: rgb(204,204,204);
+                --BRIGHT_BLACK: rgb(118,118,118);
+                --BRIGHT_BLUE: rgb(59,120,255);
+                --BRIGHT_GREEN: rgb(22,198,12);
+                --BRIGHT_CYAN: rgb(97,214,214);
+                --BRIGHT_RED: rgb(231,72,86);
+                --BRIGHT_MAGENTA: rgb(180,0,158);
+                --BRIGHT_YELLOW: rgb(249,241,165);
+                --WHITE: rgb(242,242,242);
+            }
+
+            * {
+                font-family: "terminus";
+                font-size: 20px
+            }
+
+            body {
+                background-color: var(--BLACK);
+                color: var(--WHITE);
+                /* overflow: hidden; */
+                user-select: none;
+            }
+
+            #cursor {
+                position: absolute;
+            }
+
+            #clipboard-collect {
+                opacity: 0;
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            #terminal {
+                white-space: pre;
+                width: 100%;
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <span id="terminal"></span><span id="cursor">_<input type="text" id="clipboard-collect"></span>
+    </body>
+
+    <script src="sys/terminal.js"></script>
+    <script src="sys/fs.js"></script>
+    <script src="sys/ppm.js"></script>
+    <script src="sys/system.js"></script>
+</html>

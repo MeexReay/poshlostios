@@ -1,0 +1,8 @@
+{
+    "name": "putils",
+    "version": "0.1.0",
+    "description": "Poshliye Utiliti",
+    "author": "MeexReay",
+    "apps": [ "bump.js", "cat.js", "cp.js", "ls.js", "mkdir.js", "mv.js", "rm.js" ],
+    "configs": []
+}

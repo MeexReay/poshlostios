@@ -1,0 +1,8 @@
+{
+    "name": "neofetch",
+    "version": "0.1.1",
+    "description": "neofetch damn",
+    "author": "MeexReay",
+    "apps": [ "neofetch.js" ],
+    "configs": []
+}
