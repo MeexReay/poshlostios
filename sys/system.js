@@ -23,6 +23,8 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
     while (true) {
         let event = await pollStdinEvent()
 
+        console.log(event)
+
         if (event.type == "key") {
             if (event.key == "Backspace") {
                 if (content.length >= 1) {
