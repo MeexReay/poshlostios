@@ -6,6 +6,8 @@
 
 const message = `Приветствуем в PoshlostiOS!!!!
 
+Github - https://github.com/MeexReay/poshlostios
+
 Стандартные komandi:
 * cd <dir> - перемещение по папкам
 * hello - эт кодмана
