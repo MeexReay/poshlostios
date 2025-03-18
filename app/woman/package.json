@@ -3,6 +3,6 @@
     "version": "0.1.0",
     "description": "Wisdom Order Manuals",
     "author": "MeexReay",
-    "apps": [ "vget.js" ],
+    "apps": [ "woman.js" ],
     "configs": []
 }
