@@ -14,7 +14,7 @@ async function main(args) {
         return 1
     }
 
-    if (args[0] == "apps") {
+    if (args[1] == "apps") {
         writeStdout(`# Создание приложений
 
 Все приложения в PoshlostiOS это JS скрипты
@@ -39,35 +39,35 @@ async function main(args) {
 `)
 
         return 0
-    } else if (args[0] == "files") {
+    } else if (args[1] == "files") {
         writeStdout(`# Работа файлов в приложениях
 
 Статья в разработке
 
 `)
         return 0
-    } else if (args[0] == "stdin") {
+    } else if (args[1] == "stdin") {
         writeStdout(`# Чтение ввода пользователя
 
 Статья в разработке
 
 `)
         return 0
-    } else if (args[0] == "stdout") {
+    } else if (args[1] == "stdout") {
         writeStdout(`# Вывод текста в консоль
 
 Статья в разработке
 
 `)
         return 0
-    } else if (args[0] == "cursor") {
+    } else if (args[1] == "cursor") {
         writeStdout(`# Работа с курсором
 
 Статья в разработке
 
 `)
         return 0
-    }if (args[0] == "packaging") {
+    } else if (args[1] == "packaging") {
         writeStdout(`# Пакетирование приложений
 
 Статья в разработке
