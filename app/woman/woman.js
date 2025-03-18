@@ -1,6 +1,6 @@
 
 async function main(args) {
-    if (args.length != 1) {
+    if (args.length != 2) {
         writeStdout(`Использование: woman <статья>
 
 Статьи:
