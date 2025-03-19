@@ -11,6 +11,7 @@ async function main(args) {
 * terminal - Работа с остальными функциями консоли
 * packaging - Пакетирование приложений
 * graphics - Отрисовка графики
+* colors - Цвета в консоли
 `)
         return 1
     }
@@ -157,6 +158,18 @@ async function main(args) {
   updateCursor() - обновить курсор
   getCursorIndex() -> index - получить индекс курсора в тексте терминала
   getCursor() -> [x, y] - получить курсор
+
+`)
+        return 0
+    } else if (args[1] == "colors") {
+        writeStdout(`# Цвета в консоли
+
+Вот как сделать цвет: $$#000000
+Вот как убрать цвет: $$reset
+
+Чтоб вывести это в консоль как я щас сделал пиши в начале два доллара
+
+Все понятно?
 
 `)
         return 0

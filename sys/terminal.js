@@ -43,7 +43,7 @@ function clearTerminal() {
 }
 
 function updateTerminalWOCursor() {
-    terminal.innerText = terminal_text
+    terminal.innerHTML = convertColorCodes(terminal_text)
 }
 
 function updateTerminal() {
@@ -86,6 +86,19 @@ function updateCursor() {
     cursor.style["top"] = cursor_pos[1] * CHAR_SIZE[1] + CURSOR_OFFSET[1] + "px"
     cursor.style["left"] = cursor_pos[0] * CHAR_SIZE[0] + CURSOR_OFFSET[0] + "px"
     cursor.scrollIntoView({behavior: "smooth", inline: "end"})
+}
+
+function convertColorCodes(input) {
+    return input.replace(/\$\$#([0-9a-fA-F]{6})/g, '$#$1')
+                .replace(/\$#([0-9a-fA-F]{6})/g, '<span color="#$1">')
+                .replace(/\$\$reset/g, '$reset')
+                .replace(/\$reset/g, '</span>');
+}
+
+function stripHtml(html) {
+    let tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
 }
 
 document.onkeydown = (e) => {

@@ -24,10 +24,10 @@ Github - https://github.com/MeexReay/poshlostios
 * reset - УНИЧТОЖИТЬ СИСТЕМУ, и установить заново :3
 * cat <file> - показать содержимое файла
 * ppm <i/s/r/u/A/a/l> [package] - пакетный менеджер
+* woman <article> - руководства по всякому
 
 Планируется:
 * сделать hex цвета
-* прога Worldwide Objective Manuals (WOMan) которая пишет туторы по пакетам, написанию прог и описание стандартных прог
 * прога чтото наподобе nano или vi
 `
 
