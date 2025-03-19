@@ -97,8 +97,8 @@ function convertColorCodes(input) {
 
 function stripHtml(html) {
     let tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
+    tmp.innerText = html;
+    return tmp.innerHTML;
 }
 
 document.onkeydown = (e) => {
