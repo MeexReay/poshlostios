@@ -44,7 +44,7 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
                     pos += 1
                 }
             } else {
-                let res = on_key(event.key, is_ctrl, is_alt, is_shift, content, pos)
+                let res = on_key(event.key, event.ctrl, event.alt, event.shift, content, pos)
                 terminal_text = terminal_text.slice(0, terminal_text.length - content.length) + res[0]
                 updateTerminal()
                 setCursor(start_cursor_pos[0] + res[1], start_cursor_pos[1])
