@@ -29,6 +29,14 @@ function trimTerminal(length) {
     updateTerminal()
 }
 
+function getTerminal() {
+    return terminal_text
+}
+
+function setTerminal(content) {
+    terminal_text = content
+}
+
 function clearTerminal() {
     terminal_text = ""
     updateTerminal()
