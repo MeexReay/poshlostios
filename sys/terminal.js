@@ -43,7 +43,7 @@ function clearTerminal() {
 }
 
 function updateTerminalWOCursor() {
-    terminal.innerHTML = convertColorCodes(terminal_text)
+    terminal.innerHTML = convertColorCodes(stripHtml(terminal_text))
 }
 
 function updateTerminal() {

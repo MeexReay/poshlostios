@@ -27,8 +27,8 @@ Github - https://github.com/MeexReay/poshlostios
 * woman <article> - руководства по всякому
 
 Планируется:
-* сделать hex цвета
 * прога чтото наподобе nano или vi
+* xorg
 `
 
 async function main(args) {
