@@ -36,6 +36,10 @@ function trimTerminal(length) {
     updateTerminal()
 }
 
+function getStrippedTerminal() {
+    return stripColors(getTerminal())
+}
+
 function getTerminal() {
     return terminal_text
 }
@@ -54,9 +58,10 @@ function updateTerminalWOCursor() {
 }
 
 function updateTerminal() {
+    let stripped_terminal = getStrippedTerminal()
     setCursor(
-        terminal_text.split("\n").reverse()[0].length, 
-        terminal_text.split("\n").length-1
+        stripped_terminal.split("\n").reverse()[0].length, 
+        stripped_terminal.split("\n").length-1
     )
     updateTerminalWOCursor()
 }
