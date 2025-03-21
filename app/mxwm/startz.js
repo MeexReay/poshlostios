@@ -10,16 +10,22 @@ async function main(args) {
     let run = true
 
     (async () => {
+        setStdinFlag(SILENT_STDIN)
+        setStdinFlag(ENABLE_STDIN)
+
         while (true) {
             let event = await pollStdinEvent()
 
             if (event.type == "key") {
                 if (event.key == "Escape") {
                     run = false
-                    return
+                    break
                 }
             }
         }
+        
+        setStdinFlag(RENDER_STDIN)
+        setStdinFlag(DISABLE_STDIN)
     })()
 
     while (run) {
