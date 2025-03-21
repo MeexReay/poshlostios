@@ -76,7 +76,9 @@ async function main(args) {
                     trimTerminal(status_length)
                     writeStdout(":")
     
-                    let command = readLine()
+                    let command = await readLine()
+
+                    trimTerminal(1)
     
                     setStdinFlag(ENABLE_STDIN)
                     setStdinFlag(SILENT_STDIN)

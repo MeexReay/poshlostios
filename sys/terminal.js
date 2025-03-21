@@ -7,8 +7,8 @@ var last_stdin_length = 0
 
 function getTerminalSize() {
     return [
-        Math.floor((window.innerWidth - CURSOR_OFFSET[0] * 2) / CHAR_SIZE[0]),
-        Math.floor((window.innerHeight - CURSOR_OFFSET[1] * 2) / CHAR_SIZE[1])
+        Math.round((window.innerWidth - CURSOR_OFFSET[0] * 2) / CHAR_SIZE[0]),
+        Math.round((window.innerHeight - CURSOR_OFFSET[1] * 2) / CHAR_SIZE[1])
     ]
 }
 
