@@ -73,7 +73,12 @@ async function main(args) {
         } else if (event.type == "char") {
             if (mode == "normal") {
                 if (event.char == ":") {
+                    console.log(status_length)
+                    
                     trimTerminal(status_length)
+
+                    console.log(getTerminal())
+
                     writeStdout(":")
     
                     let command = await readLine()
