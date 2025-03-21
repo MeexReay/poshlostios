@@ -100,8 +100,10 @@ function updateCursor() {
     cursor.scrollIntoView({behavior: "smooth", inline: "end"})
 }
 
-function stripColors(content) {
-    return stripHtml(convertColorCodes(content))
+function stripColors(input) {
+    return input.replace(/\$#([0-9a-fA-F]{6})/g, "")
+                .replace(/\$([A-Z_]+)--/g, "")
+                .replace(/\$reset/g, "")
 }
 
 function makeColorCodesPrintable(input) {
