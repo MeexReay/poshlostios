@@ -7,14 +7,18 @@ async function main(args) {
 
     let ctx = getGraphics()
 
-    setInterval(() => {
+    while (true) {
         ctx.fillStyle = "black"
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
         for (const win of window.mxwm_windows) {
             ctx.drawImage(win.canvas, win.x, win.y);
         }
-    }, 1000 / 60)
+
+        await new Promise(resolve => setTimeout(resolve, 1000 / 60))
+    }
 
     disableGraphics()
+
+    return 0
 }
