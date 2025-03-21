@@ -1,0 +1,8 @@
+{
+    "name": "mxwm",
+    "version": "0.1.0",
+    "description": "Mega eXtreme Window Manager",
+    "author": "MeexReay",
+    "apps": [ "zcom.js", "startz.js" ],
+    "configs": []
+}
