@@ -77,7 +77,7 @@ function getCursorIndex() {
 
         index += length + 1
     }
-    return 0
+    return index
 }
 
 function getCursor() {

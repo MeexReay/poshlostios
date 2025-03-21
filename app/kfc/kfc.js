@@ -33,6 +33,21 @@ function editLine(content, line, callback) {
     return lines.join("\n")
 }
 
+function axisToIndex(lines, pos) {
+    let index = 0
+    for (let y = 0; y < lines.length; y++) {
+        const line = lines[y];
+        const length = line.length
+
+        if (y == pos[1]) {
+            return index + pos[0]
+        }
+
+        index += length + 1
+    }
+    return index
+}
+
 async function main(args) {
     if (args.length != 2) {
         writeStdout(`Usage: kfc <file>\n`)
@@ -64,12 +79,11 @@ async function main(args) {
 
         if (event.type == "key") {
             if (event.key == "Backspace") {
-                if (pos[0] > 0) {
-                    content = editLine(content, pos[1], line => line.slice(0, pos[0] - 1) + line.slice(pos[0]))
-                    pos[0] -= 1
-                }
+                let index = axisToIndex(content.split("\n"), pos)
+                content = content.slice(0, index - 1) + content.slice(index)
             } else if (event.key == "Delete") {
-                content = editLine(content, pos[1], line => line.slice(0, pos[0]) + line.slice(pos[0] + 1))
+                let index = axisToIndex(content.split("\n"), pos)
+                content = content.slice(0, index) + content.slice(index + 1)
             } else if (event.key == "ArrowUp") {
                 pos[1] = Math.max(0, pos[1] - 1)
                 pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0])
