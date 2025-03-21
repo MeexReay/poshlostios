@@ -28,7 +28,7 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
 
         if (event.type == "key") {
             if (event.key == "Backspace") {
-                if (pos > 1) {
+                if (pos >= 1) {
                     content = content.slice(0, pos - 1) + content.slice(pos)
                     pos -= 1
                     setTerminal(start_terminal.substring(0, terminal_text.length-length) + content)
