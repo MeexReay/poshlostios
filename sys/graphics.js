@@ -5,7 +5,11 @@ var graphics_context = null
 function enableGraphics() {
     graphics_canvas = document.createElement("canvas")
     graphics_canvas.id = "graphics"
+    graphics_canvas.width = window.innerWidth.toString()
+    graphics_canvas.height = window.innerHeight.toString()
     graphics_context = graphics_canvas.getContext("2d")
+    graphics_context.fillStyle = "blue";
+    graphics_context.fillRect(0, 0, graphics_canvas.width, graphics_canvas.height);
     document.body.appendChild(graphics_canvas)
 }
 
