@@ -1,5 +1,5 @@
 {
-    "prompt": "[posh {cwd}]$ ",
+    "prompt": "$BRIGHT_GREEN--[posh {cwd}]$reset$ ",
     "startup": [
         "hello",
         "meow"
