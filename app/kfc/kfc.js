@@ -29,7 +29,7 @@ async function main(args) {
 
     let pos = getCursor()
 
-    await writeStdout(cropToScreen(content, 0, 0, terminal_width, terminal_height - 1))
+    await writeStdout(await cropToScreen(content, 0, 0, terminal_width, terminal_height - 1))
 
     setStdinFlag(ENABLE_STDIN)
     setStdinFlag(SILENT_STDIN)
