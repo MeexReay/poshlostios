@@ -32,6 +32,7 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
                     content = content.slice(0, pos - 1) + content.slice(pos)
                     pos -= 1
                     setTerminal(start_terminal.substring(0, terminal_text.length-length) + content)
+                    let cursor = getCursor()
                     setCursor(cursor[0]-1, cursor[1])
                     updateTerminalWOCursor()
                 }
