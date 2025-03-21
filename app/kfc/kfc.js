@@ -64,11 +64,11 @@ async function main(args) {
             } else if (event.key == "ArrowUp") {
                 pos[1] = Math.max(0, pos[1] - 1)
             } else if (event.key == "ArrowDown") {
-                pos[1] = Math.min(height - 2, pos[1] + 1)
+                pos[1] = Math.min(content.split("\n").length-1, pos[1] + 1)
             } else if (event.key == "ArrowLeft") {
                 pos[0] = Math.max(0, pos[0] - 1)
             } else if (event.key == "ArrowRight") {
-                pos[0] = Math.min(height - 1, pos[0] + 1)
+                pos[0] = Math.min(content.split("\n")[y].length - 1, pos[0] + 1)
             } else if (event.key == "Escape") {
                 mode = "normal"
             } else if (event.key == "Insert") {
@@ -99,12 +99,11 @@ async function main(args) {
                     screen_length += status_length
     
                     if (command == "w") {
-                        // save
+                        writeFile(args[1], content)
                     } else if (command == "q") {
                         break
                     } else if (command == "x") {
-                        // save
-    
+                        writeFile(args[1], content)
                         break
                     }
                 } else if (event.char == "i") {
