@@ -102,6 +102,8 @@ function stripColors(content) {
 function convertColorCodes(input) {
     return input.replace(/\$#([0-9a-fA-F]{6})/g, '<span style="color: #$1">')
                 .replace(/\$##([0-9a-fA-F]{6})/g, '$#$1')
+                .replace(/\$([A-Z_]+)/g, '<span style="color: --$1">')
+                .replace(/\$#([A-Z_]+)/g, '$$$1')
                 .replace(/\$reset/g, '</span>')
                 .replace(/\$#reset/g, '$reset');
 }
