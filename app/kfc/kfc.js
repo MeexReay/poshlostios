@@ -99,6 +99,10 @@ async function main(args) {
     
                         break
                     }
+
+                    screen_length -= status_length
+                    status_length = 1 + command.length
+                    screen_length += status_length
                 } else if (event.char == "i") {
                     mode = "insert"
                 }
