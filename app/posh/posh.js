@@ -25,7 +25,6 @@ async function processCommand(command, args) {
                 await writeStdout("\nСтатус код: "+code+"\n")
             }
         } catch (e) {
-            console.log(e)
             await writeStdout("Не запустилася\n")
         }
     } else {
@@ -54,8 +53,6 @@ async function main(args) {
         await writeStdout(prompt.replace("{cwd}", cwd))
 
         let command = await readLine((key, ctrl, alt, shift, content, pos) => {
-            console.log(history, content, pos, key)
-        
             if (key == "ArrowDown") {
                 history_index = Math.max(0, history_index - 1)
                 return [history[history_index], history[history_index].length]

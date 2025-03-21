@@ -9,6 +9,7 @@ async function main(args) {
 
     let pos = getCursor()
 
+    setStdinFlag(ENABLE_STDIN)
     setStdinFlag(SILENT_STDIN)
 
     while (true) {

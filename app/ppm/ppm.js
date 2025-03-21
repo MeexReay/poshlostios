@@ -101,8 +101,6 @@ async function main(args) {
                     let pkg = await getInstalledPackage(package["name"])
                     await writeStdout(`Пакет ${pkg['name']}-${pkg['version']} обновлен\n`)
                     break
-                } else{
-                    console.log(status, repo, package)
                 }
             }
         }
