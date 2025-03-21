@@ -22,9 +22,9 @@ async function main(args) {
                 break
             }
 
-            writeStdout(event + "\n")
+            writeStdout(JSON.stringify(event) + "\n")
         } else if (event.type == "char") {
-            writeStdout(event + "\n")
+            writeStdout(JSON.stringify(event) + "\n")
         }
     }
 
