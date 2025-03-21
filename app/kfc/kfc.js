@@ -68,7 +68,7 @@ async function main(args) {
             } else if (event.key == "ArrowLeft") {
                 pos[0] = Math.max(0, pos[0] - 1)
             } else if (event.key == "ArrowRight") {
-                pos[0] = Math.min(content.split("\n")[y].length - 1, pos[0] + 1)
+                pos[0] = Math.min(content.split("\n")[y].length, pos[0] + 1)
             } else if (event.key == "Escape") {
                 mode = "normal"
             } else if (event.key == "Insert") {
