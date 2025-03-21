@@ -18,7 +18,7 @@ async function cropToScreen(text, x, y, width, height) {
 }
 
 async function printScreen(screen_length, start_cursor, pos, content, mode, pos, x, y, width, height) {
-    trimTerminal(getTerminal().length - screen_length)
+    trimTerminal(screen_length)
     let screen = await cropToScreen(content, 0, 0, width, height - 1)
     await writeStdout(screen)
     let status_line = `\nmode: ${mode} | size: ${content.length} | lines: ${content.split("\n").length} | x: ${pos[0]} | y: ${pos[1]}`
@@ -73,7 +73,7 @@ async function main(args) {
         } else if (event.type == "char") {
             if (mode == "normal") {
                 if (event.char == ":") {
-                    trimTerminal(getTerminal().length - status_length)
+                    trimTerminal(status_length)
                     writeStdout(":")
     
                     let command = readLine()
