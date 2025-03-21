@@ -1,6 +1,6 @@
 {
     "name": "ppm",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Poshliy Package Manager",
     "author": "MeexReay",
     "apps": [ "ppm.js" ],
