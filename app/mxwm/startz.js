@@ -7,7 +7,22 @@ async function main(args) {
 
     let ctx = getGraphics()
 
-    while (true) {
+    let run = true
+
+    (async () => {
+        while (true) {
+            let event = await pollStdinEvent()
+
+            if (event.type == "key") {
+                if (event.key == "Escape") {
+                    run = false
+                    return
+                }
+            }
+        }
+    })()
+
+    while (run) {
         ctx.fillStyle = "black"
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
