@@ -78,29 +78,32 @@ function getCursorIndex() {
         let strippedLine = stripColors(line);
         let length = strippedLine.length;
 
-        if (y == cursor_pos[1]) {
-            let visiblePos = cursor_pos[0];
-            let realPos = 0;
-            let visibleCount = 0;
+        if (y === cursor_pos[1]) {
+            let visiblePos = cursor_pos[0]; // Где курсор в ОЧИЩЕННОМ тексте
+            let realPos = 0; // Где он должен быть в ИСХОДНОМ тексте
+            let visibleCount = 0; // Сколько обычных символов прошло
 
-            // Синхронизируем позиции между оригинальным и очищенным текстом
             for (let i = 0; i < line.length; i++) {
+                if (line[i] === "$") {
+                    // Проверяем, начинается ли тут цветовой код
+                    let match = line.substring(i).match(/^(\$#([0-9a-fA-F]{6})|\$[A-Z_]+--|\$reset)/);
+                    if (match) {
+                        i += match[0].length - 1; // Перепрыгиваем цветовой код
+                        realPos += match[0].length;
+                        continue;
+                    }
+                }
+
+                // Если мы дошли до позиции курсора в очищенном тексте
                 if (visibleCount === visiblePos) {
                     return index + realPos;
                 }
 
-                if (line[i] === "\n") {
-                    index++;
-                    continue;
-                }
-
-                if (!line.substring(i).match(/^\$#([0-9a-fA-F]{6})|^\$[A-Z_]+--|^\$reset/)) {
-                    visibleCount++;
-                }
-                realPos++;
+                visibleCount++; // Считаем обычные символы
+                realPos++; // Считаем индекс в исходном тексте
             }
 
-            return index + realPos; // На случай, если курсор в конце строки
+            return index + realPos; // Если курсор стоит в конце строки
         }
 
         index += line.length + 1; // +1 за \n
