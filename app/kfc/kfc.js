@@ -22,9 +22,9 @@ async function main(args) {
                 break
             }
 
-            writeStdout(event.key + "\n")
+            writeStdout(event + "\n")
         } else if (event.type == "char") {
-            writeStdout(event.char + "\n")
+            writeStdout(event + "\n")
         }
     }
 
