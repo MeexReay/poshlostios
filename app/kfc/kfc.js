@@ -17,7 +17,7 @@ async function cropToScreen(text, x, y, width, height) {
     return screen.join("\n")
 }
 
-async function printScreen(start_cursor, pos, content, mode, pos, x, y, width, height) {
+async function printScreen(screen_length, start_cursor, pos, content, mode, pos, x, y, width, height) {
     trimTerminal(getTerminal().length - screen_length)
     let screen = await cropToScreen(content, 0, 0, width, height - 1)
     await writeStdout(screen)
