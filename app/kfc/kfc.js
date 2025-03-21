@@ -27,6 +27,12 @@ async function printScreen(screen_length, start_cursor, pos, content, mode, pos,
     return [screen.length + status_line.length, status_line.length - 1]
 }
 
+function editLine(content, line, callback) {
+    let lines = content.split("\n")
+    lines[line] = callback(lines[line])
+    return lines.join("\n")
+}
+
 async function main(args) {
     if (args.length != 2) {
         writeStdout(`Usage: kfc <file>\n`)
@@ -110,7 +116,8 @@ async function main(args) {
                     mode = "insert"
                 }
             } else if (mode == "insert") {
-                
+                content = editLine(content, pos[1], line => line.slice(0, pos[0]) + event.char + line.slice(pos[0]))
+                pos[0] += 1
             }
         }
 
