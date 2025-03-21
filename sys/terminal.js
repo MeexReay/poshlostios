@@ -70,19 +70,43 @@ var cursor = document.getElementById("cursor")
 var cursor_pos = [0, 0]
 
 function getCursorIndex() {
-    let lines = terminal_text.split("\n")
-    let index = 0
+    let lines = terminal_text.split("\n");
+    let index = 0;
+
     for (let y = 0; y < lines.length; y++) {
-        const line = lines[y];
-        const length = line.length
+        let line = lines[y];
+        let strippedLine = stripColors(line);
+        let length = strippedLine.length;
 
         if (y == cursor_pos[1]) {
-            return index + cursor_pos[0]
+            let visiblePos = cursor_pos[0];
+            let realPos = 0;
+            let visibleCount = 0;
+
+            // Синхронизируем позиции между оригинальным и очищенным текстом
+            for (let i = 0; i < line.length; i++) {
+                if (visibleCount === visiblePos) {
+                    return index + realPos;
+                }
+
+                if (line[i] === "\n") {
+                    index++;
+                    continue;
+                }
+
+                if (!line.substring(i).match(/^\$#([0-9a-fA-F]{6})|^\$[A-Z_]+--|^\$reset/)) {
+                    visibleCount++;
+                }
+                realPos++;
+            }
+
+            return index + realPos; // На случай, если курсор в конце строки
         }
 
-        index += length + 1
+        index += line.length + 1; // +1 за \n
     }
-    return index
+
+    return index;
 }
 
 function getCursor() {
