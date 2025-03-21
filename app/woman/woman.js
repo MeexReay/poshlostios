@@ -165,8 +165,27 @@ async function main(args) {
     } else if (args[1] == "colors") {
         writeStdout(`# Цвета в консоли
 
-Вот как сделать цвет: $##000000
+Вот как сделать обычный цвет: $#BRIGHT_RED--
+Вот как сделать hex цвет: $##000000
 Вот как убрать цвет: $#reset
+
+Вот другие цвета кроме яркого красного:
+* BLACK
+* DARK_BLUE
+* DARK_GREEN
+* DARK_CYAN
+* DARK_RED
+* DARK_MAGENTA
+* DARK_YELLOW
+* DARK_WHITE
+* BRIGHT_BLACK
+* BRIGHT_BLUE
+* BRIGHT_GREEN
+* BRIGHT_CYAN
+* BRIGHT_RED
+* BRIGHT_MAGENTA
+* BRIGHT_YELLOW
+* WHITE
 
 Чтоб вывести это в консоль как я щас сделал пиши в начале $# вместо просто доллара
 
