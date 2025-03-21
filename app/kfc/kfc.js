@@ -64,9 +64,12 @@ async function main(args) {
 
         if (event.type == "key") {
             if (event.key == "Backspace") {
-
+                if (pos[0] > 0) {
+                    content = editLine(content, pos[1], line => line.slice(0, pos[0] - 1) + line.slice(pos[0]))
+                    pos[0] -= 1
+                }
             } else if (event.key == "Delete") {
-                
+                content = editLine(content, pos[1], line => line.slice(0, pos[0]) + line.slice(pos[0] + 1))
             } else if (event.key == "ArrowUp") {
                 pos[1] = Math.max(0, pos[1] - 1)
                 pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0])
