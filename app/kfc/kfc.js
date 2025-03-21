@@ -81,10 +81,12 @@ async function main(args) {
             if (event.key == "Backspace") {
                 let index = axisToIndex(content.split("\n"), pos)
                 content = content.slice(0, index - 1) + content.slice(index)
-                if (pos[0] == 0 && pos[1] > 0) {
-                    pos[1]--
-                } else {
+                if (pos[0] > 0) {
                     pos[0]--
+                } else {
+                    if (pos[1] > 0) {
+                        pos[1]--
+                    }
                 }
             } else if (event.key == "Delete") {
                 let index = axisToIndex(content.split("\n"), pos)
