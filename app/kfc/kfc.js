@@ -89,6 +89,10 @@ async function main(args) {
     
                     setStdinFlag(ENABLE_STDIN)
                     setStdinFlag(SILENT_STDIN)
+
+                    screen_length -= status_length
+                    status_length = 1 + command.length
+                    screen_length += status_length
     
                     if (command == "w") {
                         // save
@@ -99,10 +103,6 @@ async function main(args) {
     
                         break
                     }
-
-                    screen_length -= status_length
-                    status_length = 1 + command.length
-                    screen_length += status_length
                 } else if (event.char == "i") {
                     mode = "insert"
                 }
