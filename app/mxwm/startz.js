@@ -16,6 +16,8 @@ async function main(args) {
         while (true) {
             let event = await pollStdinEvent()
 
+            console.log(event)
+
             if (event.type == "key") {
                 if (event.key == "Escape") {
                     run = false
