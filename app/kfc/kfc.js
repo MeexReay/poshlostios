@@ -79,6 +79,9 @@ async function main(args) {
 
         if (event.type == "key") {
             if (event.key == "Backspace") {
+                if (pos[0] == 0 && pos[1] == 0) {
+                    continue
+                }
                 let index = axisToIndex(content.split("\n"), pos)
                 content = content.slice(0, index - 1) + content.slice(index)
                 if (pos[0] > 0) {
@@ -86,6 +89,7 @@ async function main(args) {
                 } else {
                     if (pos[1] > 0) {
                         pos[1]--
+                        pos[0] = content.split("\n")[pos[1]].length
                     }
                 }
             } else if (event.key == "Delete") {
