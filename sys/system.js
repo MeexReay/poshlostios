@@ -189,6 +189,7 @@ async function resetSystem() {
     await installPackage("app/putils")
     await installPackage("app/reset")
     await installPackage("app/vget")
+    await installPackage("app/kfc")
     await installPackage("app/woman")
 }
 
