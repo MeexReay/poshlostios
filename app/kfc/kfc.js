@@ -36,6 +36,10 @@ async function main(args) {
 
     let content = readFile(args[1])
 
+    if (content == null) {
+        content = ""
+    }
+
     let mode = "normal"
     let pos = [0, 0]
 
