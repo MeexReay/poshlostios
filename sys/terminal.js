@@ -5,6 +5,13 @@ var terminal = document.getElementById("terminal")
 var terminal_text = ""
 var last_stdin_length = 0
 
+function getTerminalSize() {
+    return [
+        Math.floor(window.innerWidth - CURSOR_OFFSET[0] * 2 / CHAR_SIZE[0]),
+        Math.floor(window.innerHeight - CURSOR_OFFSET[1] * 2 / CHAR_SIZE[1])
+    ]
+}
+
 function writeTerminalAtCursor(content) {
     let cursor_index = getCursorIndex()
     terminal_text = terminal_text.slice(0, cursor_index) + content + terminal_text.slice(cursor_index)

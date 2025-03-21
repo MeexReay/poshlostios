@@ -158,6 +158,7 @@ async function main(args) {
   updateCursor() - обновить курсор
   getCursorIndex() -> index - получить индекс курсора в тексте терминала
   getCursor() -> [x, y] - получить курсор
+  getTerminalSize() -> [width, height] - получить ширину высоту терминала в символах
 
 `)
         return 0

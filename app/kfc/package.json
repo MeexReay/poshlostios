@@ -1,0 +1,8 @@
+{
+    "name": "kfc",
+    "version": "0.0.1-test",
+    "description": "Keep Files Customized",
+    "author": "MeexReay",
+    "apps": [ "kfc.js" ],
+    "configs": []
+}
