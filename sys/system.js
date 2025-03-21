@@ -157,22 +157,6 @@ function executeCommand(args, read=readStdin, write=writeStdout) {
     return process
 }
 
-function loadApp(name) {
-    fetch("app/"+name+".js")
-        .then(o => o.text())
-        .then(o => { 
-            writeFile("/app/"+name+".js", o) 
-        }) 
-}
-
-function loadAppAndExecute(name) {
-    fetch("app/"+name+".js")
-        .then(o => o.text())
-        .then(o => { 
-            writeFile("/app/"+name+".js", o) 
-        }) 
-}
-
 async function resetSystem() {
     clearFileSystem()
 
