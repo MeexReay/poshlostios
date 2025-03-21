@@ -25,9 +25,9 @@ Github - https://github.com/MeexReay/poshlostios
 * cat <file> - показать содержимое файла
 * ppm <i/s/r/u/A/a/l> [package] - пакетный менеджер
 * woman <article> - руководства по всякому
+* kfc <file> - редактор файлов в стиле vi
 
 Планируется:
-* прога чтото наподобе nano или vi
 * xorg
 `
 
