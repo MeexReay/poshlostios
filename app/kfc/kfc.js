@@ -119,6 +119,8 @@ async function main(args) {
     setStdinFlag(RENDER_STDIN)
     setStdinFlag(DISABLE_STDIN)
 
+    trimTerminal(screen_length)
+
     await writeStdout("\n")
 
     return 0
