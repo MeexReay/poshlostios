@@ -181,6 +181,7 @@ async function resetSystem() {
     await installPackage("app/putils")
     await installPackage("app/reset")
     await installPackage("app/vget")
+    await installPackage("app/woman")
 }
 
 if (Object.keys(fs_mapping).length == 0) {
