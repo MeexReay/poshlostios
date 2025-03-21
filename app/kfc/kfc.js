@@ -81,6 +81,8 @@ async function main(args) {
 
                     writeStdout(":")
     
+                    setStdinFlag(RENDER_STDIN)
+
                     let command = await readLine()
 
                     trimTerminal(1)
