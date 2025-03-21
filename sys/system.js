@@ -16,18 +16,22 @@ const ENABLE_STDIN = 4
 async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content, pos]) {
     setStdinFlag(ENABLE_STDIN)
 
+    let start_terminal = getTerminal()
+
     let start_cursor_pos = getCursor()
 
     let pos = 0
     let content = ""
+
     while (true) {
         let event = await pollStdinEvent()
 
         if (event.type == "key") {
             if (event.key == "Backspace") {
-                if (content.length >= 1) {
-                    content = content.substring(0, content.length-1)
-                    trimTerminal(1)
+                if (pos > 1) {
+                    content = content.slice(0, pos - 1) + content.slice(pos)
+                    pos -= 1
+                    replaceTerminal(start_terminal.substring(0, terminal_text.length-length) + content)
                 }
             } else if (event.key == "ArrowLeft") {
                 let cursor = getCursor()
