@@ -117,7 +117,12 @@ async function main(args) {
                 }
             } else if (mode == "insert") {
                 content = editLine(content, pos[1], line => line.slice(0, pos[0]) + event.char + line.slice(pos[0]))
-                pos[0] += 1
+                if (event.char == "\n") {
+                    pos[1] += 1
+                    pos[0] = 0
+                } else {
+                    pos[0] += 1
+                }
             }
         }
 
