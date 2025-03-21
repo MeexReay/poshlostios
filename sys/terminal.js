@@ -99,6 +99,12 @@ function stripColors(content) {
     return convertColorCodes(content)
 }
 
+function makeColorCodesPrintable(input) {
+    return input.replace(/\$#([0-9a-fA-F]{6})/g, '$$##$1')
+                .replace(/\$([A-Z_]+)--/g, '$$#$1--')
+                .replace(/\$reset/g, '$$#reset');
+}
+
 function convertColorCodes(input) {
     return input.replace(/\$#([0-9a-fA-F]{6})/g, '<span style="color: #$1">')
                 .replace(/\$##([0-9a-fA-F]{6})/g, '$#$1')

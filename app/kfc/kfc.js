@@ -20,7 +20,7 @@ async function cropToScreen(text, x, y, width, height) {
 async function printScreen(screen_length, start_cursor, pos, content, mode, pos, x, y, width, height) {
     trimTerminal(screen_length)
     let screen = await cropToScreen(content, 0, 0, width, height - 1)
-    await writeStdout(screen)
+    await writeStdout(makeColorCodesPrintable(screen))
     let status_line = `\nmode: ${mode} | size: ${content.length} | lines: ${content.split("\n").length} | x: ${pos[0]} | y: ${pos[1]}`
     await writeStdout(status_line)
     setCursor(start_cursor[0] + pos[0], start_cursor[1] + pos[1])
@@ -113,11 +113,7 @@ async function main(args) {
         } else if (event.type == "char") {
             if (mode == "normal") {
                 if (event.char == ":") {
-                    console.log(status_length)
-                    
                     trimTerminal(status_length)
-
-                    console.log(getTerminal())
 
                     writeStdout(":")
     
