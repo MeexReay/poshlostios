@@ -9,7 +9,7 @@ async function main(args) {
 
     let run = true
 
-    (async () => {
+    setTimeout(async () => {
         setStdinFlag(SILENT_STDIN)
         setStdinFlag(ENABLE_STDIN)
 
@@ -28,7 +28,7 @@ async function main(args) {
         
         setStdinFlag(RENDER_STDIN)
         setStdinFlag(DISABLE_STDIN)
-    })()
+    })
 
     while (run) {
         ctx.fillStyle = "black"
