@@ -162,6 +162,7 @@ document.onkeydown = (e) => {
                 writeTerminal("\n")
             }
         } else if (key.length == 1) {
+            if (key == "\0") return
             if (e.ctrlKey && key == "v") return
             stdin += key
             if (!silent_stdin) {
