@@ -17,9 +17,9 @@ async function cropToScreen(text, x, y, width, height) {
     return screen.join("\n")
 }
 
-async function printScreen(screen_length, start_cursor, pos, content, mode, pos, x, y, width, height) {
+async function printScreen(screen_length, start_cursor, pos, content, mode, pos, camera, width, height) {
     trimTerminal(screen_length)
-    let screen = makeColorCodesPrintable(await cropToScreen(content, x, y, width, height - 1))
+    let screen = makeColorCodesPrintable(await cropToScreen(content, camera[0], camera[1], width, height - 1))
     await writeStdout(screen)
     let status_line = `\nmode: ${mode} | size: ${content.length} | lines: ${content.split("\n").length} | x: ${pos[0]} | y: ${pos[1]}`
     await writeStdout(status_line)
@@ -63,10 +63,11 @@ async function main(args) {
 
     let mode = "normal"
     let pos = [0, 0]
+    let camera = [0, 0]
 
     let start_cursor = getCursor()
     let [width, height] = getTerminalSize()
-    let [screen_length, status_length] = await printScreen(0, start_cursor, pos, content, mode, pos, 0, 0, width, height)
+    let [screen_length, status_length] = await printScreen(0, start_cursor, pos, content, mode, pos, camera, width, height)
 
 
     setStdinFlag(ENABLE_STDIN)
@@ -96,9 +97,11 @@ async function main(args) {
                 let index = axisToIndex(content.split("\n"), pos)
                 content = content.slice(0, index) + content.slice(index + 1)
             } else if (event.key == "ArrowUp") {
+                if (pos[1] == 0 && camera[1] > 0) camera[1]--
                 pos[1] = Math.max(0, pos[1] - 1)
                 pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0])
             } else if (event.key == "ArrowDown") {
+                if (pos[1] == content.split("\n").length-1) camera[1]++
                 pos[1] = Math.min(content.split("\n").length-1, pos[1] + 1)
                 pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0])
             } else if (event.key == "ArrowLeft") {
@@ -152,7 +155,7 @@ async function main(args) {
             }
         }
 
-        let res = await printScreen(screen_length, start_cursor, pos, content, mode, pos, 0, 0, width, height)
+        let res = await printScreen(screen_length, start_cursor, pos, content, mode, pos, camera, width, height)
         screen_length = res[0]
         status_length = res[1]
     }
