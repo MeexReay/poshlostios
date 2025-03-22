@@ -2,11 +2,42 @@ var graphics_canvas = null
 var graphics_context = null
 
 
-function enableGraphics() {
+function enableGraphics(options={}) {
     graphics_canvas = document.createElement("canvas")
     graphics_canvas.id = "graphics"
     graphics_canvas.width = window.innerWidth.toString()
     graphics_canvas.height = window.innerHeight.toString()
+
+    if ("onmousemove" in options) {
+        graphics_canvas.onmousemove = e => {
+            options.onmousemove(e.x, e.y)
+        }
+    }
+
+    if ("onmousedown" in options) {
+        graphics_canvas.onmousedown = e => {
+            options.onmousedown(e.button)
+        }
+    }
+
+    if ("onmouseup" in options) {
+        graphics_canvas.onmouseup = e => {
+            options.onmouseup(e.button)
+        }
+    }
+
+    if ("onkeydown" in options) {
+        graphics_canvas.onkeydown = e => {
+            options.onkeydown(e.key)
+        }
+    }
+
+    if ("onkeyup" in options) {
+        graphics_canvas.onkeyup = e => {
+            options.onkeyup(e.key)
+        }
+    }
+
     graphics_context = graphics_canvas.getContext("2d")
     graphics_context.fillStyle = "black";
     graphics_context.fillRect(0, 0, graphics_canvas.width, graphics_canvas.height);
