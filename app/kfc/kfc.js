@@ -4,7 +4,7 @@ async function cropToScreen(text, x, y, width, height) {
     for (const line of text.split("\n")) {
         if (i <= 0) {
             screen.push(line.slice(x, width + x))
-            if (screen.length == height) {
+            if (screen.length >= height) {
                 break
             }
         } else {

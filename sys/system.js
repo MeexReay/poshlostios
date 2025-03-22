@@ -64,6 +64,7 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
             continue
         } else if (event.type == "char") {
             if (event.char == "\n") break
+            if (event.char == "\0") continue
 
             content = content.slice(0, pos) + event.char + content.slice(pos)
             pos += 1
