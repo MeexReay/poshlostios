@@ -168,20 +168,15 @@ async function resetSystem() {
     createFolder("/temp")
     createFolder("/etc")
 
-    await installPackage("app/hello")
-    await installPackage("app/posh")
-    await installPackage("app/ppm")
-    await installPackage("app/putils")
-    await installPackage("app/reset")
-    await installPackage("app/vget")
-    await installPackage("app/kfc")
-    await installPackage("app/woman")
+    for (const app of DEFAULT_APPS) {
+        await installPackage(APP_REPOSITORY + "/" + app)
+    }
 }
 
 if (Object.keys(fs_mapping).length == 0) {
     resetSystem()
 }
     
-executeCommand(["/app/posh.js"])
+executeCommand(STARTUP_COMMAND)
 
 var start_date = new Date()
