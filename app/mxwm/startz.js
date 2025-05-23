@@ -20,8 +20,8 @@ async function drawWindowDecorations(ctx, x, y, width, height, title) {
 
     const outerX = x - borderWidth - 1;
     const outerY = y - headerHeight - borderWidth - 2;
-    const outerWidth = width + borderWidth * 2 + 1;
-    const outerHeight = height + headerHeight + borderWidth * 2 + 2;
+    const outerWidth = width + borderWidth * 2 + 2;
+    const outerHeight = height + headerHeight + borderWidth * 2 + 3;
 
     ctx.fillStyle = "#f4f4f4";
     ctx.fillRect(outerX, outerY, outerWidth, outerHeight)

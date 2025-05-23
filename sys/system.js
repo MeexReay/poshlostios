@@ -13,7 +13,7 @@ const SILENT_STDIN = 2
 const DISABLE_STDIN = 3
 const ENABLE_STDIN = 4
 
-async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content, pos]) {
+const READ_FUNCTIONS_CODE = `async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content, pos]) {
     setStdinFlag(ENABLE_STDIN)
 
     let start_terminal = getTerminal()
@@ -63,8 +63,8 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
 
             continue
         } else if (event.type == "char") {
-            if (event.char == "\n") break
-            if (event.char == "\0") continue
+            if (event.char == "\\n") break
+            if (event.char == "\\0") continue
 
             content = content.slice(0, pos) + event.char + content.slice(pos)
             pos += 1
@@ -79,10 +79,10 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
 async function pollStdinEvent() {
     let char = await readStdin()
 
-    if (char == "\r") {
+    if (char == "\\r") {
         let key = ""
         char = await readStdin()
-        while (char != "\r") {
+        while (char != "\\r") {
             key += char
             char = await readStdin()
         }
@@ -106,6 +106,34 @@ async function pollStdinEvent() {
         "char": char
     }
 }
+    
+function executeCommand(args, read=readStdin, write=writeStdout, set_flag=setStdinFlag, inject="") {
+    let id = new Date().getMilliseconds().toString()+(Math.random()*100)
+    let func_content = readFile(args[0])
+    if (func_content == null || !func_content.includes("function main")) return
+    let func = new Function(
+        "args", "readStdin", "writeStdout", "setStdinFlag",
+        READ_FUNCTIONS_CODE+"\\n\\n\\n"+func_content+"\\n"+inject+"\\nreturn main(args)"
+    )
+    let process = {
+        "id": id,
+        "name": args.join(" "),
+        "promise": new Promise((resolve, reject) => {
+            setTimeout(() => {
+                try {
+                    resolve(func(args, read, write, set_flag))
+                } catch (e) {
+                    reject(e)
+                }
+            }, 0)
+        }).then(o => {
+            processes = processes.filter(x => x.id != id)
+            return o
+        })
+    }
+    processes.push(process)
+    return process
+}`
 
 async function readStdin() {
     while (stdin.length == 0) {
@@ -133,18 +161,21 @@ function setStdinFlag(flag) {
     }
 }
 
-function executeCommand(args, read=readStdin, write=writeStdout) {
+function executeCommand(args, read=readStdin, write=writeStdout, set_flag=setStdinFlag, inject="") {
     let id = new Date().getMilliseconds().toString()+(Math.random()*100)
     let func_content = readFile(args[0])
     if (func_content == null || !func_content.includes("function main")) return
-    let func = new Function("args", "readStdin", "writeStdout", func_content+"\n\nreturn main(args)")
+    let func = new Function(
+        "args", "readStdin", "writeStdout", "setStdinFlag",
+        READ_FUNCTIONS_CODE+"\n\n\n"+func_content+"\n"+inject+"\nreturn main(args)"
+    )
     let process = {
         "id": id,
         "name": args.join(" "),
         "promise": new Promise((resolve, reject) => {
             setTimeout(() => {
                 try {
-                    resolve(func(args, read, write))
+                    resolve(func(args, read, write, set_flag))
                 } catch (e) {
                     reject(e)
                 }
