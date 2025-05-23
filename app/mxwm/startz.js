@@ -39,7 +39,14 @@ async function onStart(screen_ctx) {
         "width": 500,
         "height": 500,
         "x": 50,
-        "y": 50
+        "y": 50,
+        "onkeydown": key => { 
+            ctx.fillStyle = "#222";
+            ctx.font = "bold 14px sans-serif";
+            ctx.textBaseline = "middle";
+            ctx.textAlign = "left";
+            ctx.fillText(key, 10, 10);
+        }
     })
 
     ctx.fillStyle = "cyan"
@@ -50,29 +57,35 @@ async function onKeyDown(ctx, key) {
     if (key == "Escape") {
         disableGraphics()
     }
-    getWindow(selected_window).onkeydown(key)
+    if (selected_window != null) getWindow(selected_window).onkeydown(key)
 }
 
 async function onKeyUp(ctx, key) {
-    getWindow(selected_window).onkeyup(key)
+    if (selected_window != null) getWindow(selected_window).onkeyup(key)
 }
 
 let dragging_window = null
+let selected_window = null
 
 function isMouseOnHeader(window) {
     return window.x < mouse_position[0] && mouse_position[0] < window.x + window.width &&
            window.y - headerHeight < mouse_position[1] && mouse_position[1] < window.y
 }
 
+function isMouseInside(window) {
+    return mouse_position[0] >= window.x &&
+           mouse_position[1] >= window.y &&
+           mouse_position[0] <= window.x + window.width &&
+           mouse_position[1] <= window.y + window.height
+}
+
 async function onMouseDown(ctx, button) {
     for (let window of listWindows()) {
         if (isMouseOnHeader(window)) {
             dragging_window = window["wid"]
+            selected_window = window["wid"]
         }
-        if (mouse_position[0] >= window.x &&
-            mouse_position[1] >= window.y &&
-            mouse_position[0] + window.width <= window.x &&
-            mouse_position[1] + window.height <= window.y) {
+        if (isMouseInside(window)) {
             selected_window = window["wid"]
             window.onmousedown(button)
         }
@@ -80,17 +93,13 @@ async function onMouseDown(ctx, button) {
 }
 
 async function onMouseUp(ctx, button) {
-    let window = getWindow(dragging_window)
-    
-    if (isMouseOnHeader(window)) {
-        dragging_window = null
-    }
-
-    if (mouse_position[0] >= window.x &&
-        mouse_position[1] >= window.y &&
-        mouse_position[0] + window.width <= window.x &&
-        mouse_position[1] + window.height <= window.y) {
-        window.onmouseup(button)
+    for (let window of listWindows()) {
+        if (isMouseOnHeader(window)) {
+            dragging_window = null
+        }
+        if (isMouseInside(window)) {
+            window.onmouseup(button)
+        }
     }
 }
 
@@ -107,11 +116,10 @@ async function onMouseMove(ctx, x, y) {
     
     mouse_position = [x, y]   
 
-    if (mouse_position[0] >= window.x &&
-        mouse_position[1] >= window.y &&
-        mouse_position[0] + window.width <= window.x &&
-        mouse_position[1] + window.height <= window.y) {
-        window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
+    for (let window of listWindows()) {
+        if (isMouseInside(window)) {
+            window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
+        }
     }
 }
 
