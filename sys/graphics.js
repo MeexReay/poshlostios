@@ -3,6 +3,7 @@ var graphics_context = null
 
 
 function enableGraphics(options={}) {
+    document.body.style.overflow = "hidden"
     graphics_canvas = document.createElement("canvas")
     graphics_canvas.id = "graphics"
     graphics_canvas.width = window.innerWidth.toString()
@@ -58,6 +59,7 @@ function getGraphics() {
 }
 
 function disableGraphics() {
+    document.body.style.overflow = null
     graphics_canvas.remove()
     graphics_canvas = null
     graphics_context = null
