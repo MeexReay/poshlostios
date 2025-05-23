@@ -1,6 +1,11 @@
 var graphics_canvas = null
 var graphics_context = null
 
+function setGraphicsCursor(name) {
+    if (graphics_canvas != null) {
+        graphics_canvas.style.cursor = name
+    }
+}
 
 function enableGraphics(options={}) {
     document.body.style.overflow = "hidden"

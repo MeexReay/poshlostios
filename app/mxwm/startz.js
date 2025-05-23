@@ -84,6 +84,7 @@ async function onMouseDown(ctx, button) {
         if (isMouseOnHeader(window)) {
             dragging_window = window["wid"]
             selected_window = window["wid"]
+            setGraphicsCursor("grabbing")
         }
         if (isMouseInside(window)) {
             selected_window = window["wid"]
@@ -96,6 +97,7 @@ async function onMouseUp(ctx, button) {
     for (let window of listWindows()) {
         if (isMouseOnHeader(window)) {
             dragging_window = null
+            setGraphicsCursor("grab")
         }
         if (isMouseInside(window)) {
             window.onmouseup(button)
@@ -106,11 +108,14 @@ async function onMouseUp(ctx, button) {
 let mouse_position = [0, 0]
 
 async function onMouseMove(ctx, x, y) {
+    let cursor = "default"
+    
     if (dragging_window != null) { 
         let window = getWindow(dragging_window)
         if (isMouseOnHeader(window)) {
             window.x += x - mouse_position[0]
             window.y += y - mouse_position[1]
+            cursor = "grabbing"
         }
     }
     
@@ -120,7 +125,12 @@ async function onMouseMove(ctx, x, y) {
         if (isMouseInside(window)) {
             window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
         }
+        if (dragging_window == null && isMouseOnHeader(window)) {
+            cursor = "grab"
+        }
     }
+
+    setGraphicsCursor(cursor)
 }
 
 async function main(args) {

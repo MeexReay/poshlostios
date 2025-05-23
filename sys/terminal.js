@@ -177,9 +177,11 @@ document.onkeydown = (e) => {
 }
 
 setInterval(() => {
-    if (graphics_canvas == null) {
-        clipboard_collect.focus()
-    }
+    try {
+        if (graphics_canvas == null) {
+            clipboard_collect.focus()
+        }
+    } catch (e) {}
 });
 
 clipboard_collect.onpaste = (e) => {
