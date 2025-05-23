@@ -41,6 +41,12 @@ function enableGraphics(options={}) {
     graphics_context = graphics_canvas.getContext("2d")
     graphics_context.fillStyle = "black";
     graphics_context.fillRect(0, 0, graphics_canvas.width, graphics_canvas.height);
+
+    window.addEventListener("resize", (event) => {
+        graphics_canvas.width = window.innerWidth.toString()
+        graphics_canvas.height = window.innerHeight.toString()
+    })
+    
     document.body.appendChild(graphics_canvas)
 }
 
