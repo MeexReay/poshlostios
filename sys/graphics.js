@@ -7,6 +7,7 @@ function enableGraphics(options={}) {
     graphics_canvas.id = "graphics"
     graphics_canvas.width = window.innerWidth.toString()
     graphics_canvas.height = window.innerHeight.toString()
+    graphics_canvas.setAttribute("tabindex", "0")
 
     if ("onmousemove" in options) {
         graphics_canvas.onmousemove = e => {
@@ -48,6 +49,8 @@ function enableGraphics(options={}) {
     })
     
     document.body.appendChild(graphics_canvas)
+
+    graphics_canvas.focus()
 }
 
 function getGraphics() {

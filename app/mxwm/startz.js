@@ -1,47 +1,126 @@
 eval(readFile("/app/zcom.js"))
 
+const headerHeight = 32;
+
+async function drawScreen(ctx) {
+    ctx.fillStyle = "darkcyan"
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    
+    for (const win of window.mxwm_windows) {
+        drawWindowDecorations(ctx, win.x, win.y, win.width, win.height, win.title)
+        ctx.drawImage(win.canvas, win.x, win.y);
+    }
+}
+
+async function drawWindowDecorations(ctx, x, y, width, height, title) {
+    const borderRadius = 8;
+    const borderWidth = 1;
+    const buttonRadius = 6;
+    const buttonSpacing = 8;
+
+    const outerX = x - borderWidth;
+    const outerY = y - headerHeight - borderWidth;
+    const outerWidth = width + borderWidth * 2;
+    const outerHeight = height + headerHeight + borderWidth * 2;
+
+    ctx.fillStyle = "#f4f4f4";
+    ctx.fillRect(outerX, outerY, outerWidth, outerHeight)
+
+    ctx.fillStyle = "#222";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    ctx.fillText(title, outerX + 12, outerY + headerHeight / 2);
+}
+
+async function onStart(screen_ctx) {
+    let wid, ctx = createWindow({
+        "title": "zterm",
+        "width": 500,
+        "height": 500,
+        "x": 50,
+        "y": 50
+    })
+
+    ctx.fillStyle = "cyan"
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+}
+
+async function onKeyDown(ctx, key) {
+    if (key == "Escape") {
+        disableGraphics()
+    }
+}
+
+async function onKeyUp(ctx, key) {
+}
+
+let dragging_window = null
+
+function isMouseOnHeader(window) {
+    return window.x < mouse_position[0] && mouse_position[0] < window.x + window.width &&
+           window.y - headerHeight < mouse_position[1] && mouse_position[1] < window.y
+}
+
+async function onMouseDown(ctx, button) {
+    for (let window of listWindows()) {
+        if (isMouseOnHeader(window)) {
+            dragging_window = window["wid"]
+        }
+    }
+}
+
+async function onMouseUp(ctx, button) {
+    let window = getWindow(dragging_window)
+    
+    if (isMouseOnHeader(window)) {
+        dragging_window = null
+    }
+}
+
+let mouse_position = [0, 0]
+
+async function onMouseMove(ctx, x, y) {
+    if (dragging_window != null) { 
+        let window = getWindow(dragging_window)
+        if (isMouseOnHeader(window)) {
+            window.x += x - mouse_position[0]
+            window.y += y - mouse_position[1]
+        }
+    }
+    
+    mouse_position = [x, y]   
+}
+
 async function main(args) {
-    enableGraphics()
+    let ctx = null
+    
+    enableGraphics({
+        "onmousemove": (x, y) => onMouseMove(ctx, x, y),
+        "onmousedown": (btn) => onMouseDown(ctx, btn),
+        "onmouseup": (btn) => onMouseUp(ctx, btn),
+        "onkeydown": (key) => onKeyDown(ctx, key),
+        "onkeyup": (key) => onKeyUp(ctx, key)
+    })
 
     window.mxwm_windows = []
 
-    let ctx = getGraphics()
+    ctx = getGraphics()
 
-    let run = true
+    await onStart()
 
-    setTimeout(async () => {
-        setStdinFlag(SILENT_STDIN)
-        setStdinFlag(ENABLE_STDIN)
-
-        while (true) {
-            let event = await pollStdinEvent()
-
-            console.log(event)
-
-            if (event.type == "key") {
-                if (event.key == "Escape") {
-                    run = false
-                    break
-                }
-            }
+    let drawLoop = () => {
+        if (graphics_canvas != null) {
+            drawScreen(ctx)
+            requestAnimationFrame(drawLoop)
         }
-        
-        setStdinFlag(RENDER_STDIN)
-        setStdinFlag(DISABLE_STDIN)
-    })
-
-    while (run) {
-        ctx.fillStyle = "black"
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-
-        for (const win of window.mxwm_windows) {
-            ctx.drawImage(win.canvas, win.x, win.y);
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 1000 / 60))
     }
 
-    disableGraphics()
+    drawLoop()
 
+    while (graphics_canvas != null) {
+        await new Promise(res => setTimeout(res, 1000))
+    }
+    
     return 0
 }

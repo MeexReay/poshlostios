@@ -152,6 +152,8 @@ function stripHtml(html) {
     return tmp.innerHTML;
 }
 
+var clipboard_collect = document.getElementById("clipboard-collect")
+
 document.onkeydown = (e) => {
     let key = e.key;
     if (!disable_stdin) {
@@ -174,10 +176,10 @@ document.onkeydown = (e) => {
     }
 }
 
-var clipboard_collect = document.getElementById("clipboard-collect")
-
 setInterval(() => {
-    clipboard_collect.focus()
+    if (graphics_canvas == null) {
+        clipboard_collect.focus()
+    }
 });
 
 clipboard_collect.onpaste = (e) => {

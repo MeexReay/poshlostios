@@ -6,14 +6,21 @@ function hasGraphicsImplementation() {
 function createWindow(options) {
   let canvas = document.createElement("canvas")
 
+  let wid = Date.now().toString() + Math.round(Math.random() * 100).toString()
+
   let win = {
     "title": options["title"],
     "x": options["x"] || 0,
     "y": options["y"] || 0,
     "width": options["width"] || options["w"] || 200,
     "height": options["height"] || options["h"] || 200,
-    "wid": Date.now().toString() + Math.round(Math.random() * 100).toString(),
-    "on_signal": options["on_signal"] || options["callback"] || (o => {})
+    "wid": wid,
+    "onsignal": options["onsignal"] || (o => {}),
+    "onkeydown": options["onkeydown"] || (o => {}),
+    "onkeyup": options["onkeyup"] || (o => {}),
+    "onmousedown": options["onmousedown"] || (o => {}),
+    "onmouseup": options["onmouseup"] || (o => {}),
+    "onmousemove": options["onmousemove"] || ((x,y) => {}),
   }
 
   canvas.width = win["width"].toString()
@@ -29,6 +36,8 @@ function createWindow(options) {
   } else {
     window.mxwm_windows = [ win ]
   }
+
+  return (wid, context)
 }
 
 function moveWindow(wid, x, y, w, h) {
@@ -53,7 +62,7 @@ function signalWindow(wid, signal) {
 
   for (const win of window.mxwm_windows) {
     if (win["wid"] == wid) {
-      win.on_signal(signal)
+      win.onsignal(signal)
     }
   }
 }
