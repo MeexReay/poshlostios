@@ -25,6 +25,11 @@ function getDurationString(start_time) {
     return result.join(" ");
 }
 
+function getDiskInfo() {
+    let file_system_size = getFileSystemSize()
+    return Math.round(file_system_size / 1024)+'KB / '+Math.round(MAX_STORAGE / 1024)+'KB ('+Math.round(file_system_size / MAX_STORAGE * 100)+"%) - pfs"
+}
+
 // Function to get CPU, GPU, and memory information
 function getSystemInfo() {
     const cpuInfo = navigator.hardwareConcurrency;
@@ -50,7 +55,7 @@ function getSystemInfo() {
         cpuInfo + " cores", 
         memoryInfo ? memoryInfo * 1024 + ' MB' : 'Not supported', 
         totalJSHeap.toFixed(2) + ' MB',
-        gpuInfo ? `${gpuInfo.renderer}` : 'GPU Info not available'
+        gpuInfo ? `${gpuInfo.renderer}` : 'Poshlosti GGraphics 1.0.233'       
     ]
 }
 
@@ -68,7 +73,7 @@ async function main(args) {
       █░░░░░░░░█          Memory: ${now_mem} / ${max_mem}
       █░░░░░░░░█          CPU: ${cpu}
       █░░░░░░░░░█         GPU: ${gpu}
-      ██░░░░░░░░███████   
+      ██░░░░░░░░███████   Disk (/): ${getDiskInfo()}
        █░░████████▓▓▓█    
   █████████▓▓▓▓▓▓▓▓▓██    
   █▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█     

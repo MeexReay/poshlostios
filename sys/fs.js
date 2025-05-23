@@ -221,3 +221,15 @@ function clearFileSystem() {
     fs_mapping = {}
     saveMapping()
 }
+
+function getFileSystemSize() {
+    let total = 0
+    for (let x in localStorage) {
+        if (!localStorage.hasOwnProperty(x)) {
+            continue;
+        }
+        let len = ((localStorage[x].length + x.length) * 2)
+        total += len
+    }
+    return total
+}
