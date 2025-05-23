@@ -1,12 +1,12 @@
 # poshlostios
 poshlositi os repository
 
-# Mirrors
+## Mirrors
 
 [meex.lol (official)](https://poshlostios.meex.lol) \
 [github pages (unstable)](https://meexreay.github.io/poshlostios)
 
-# Local run
+## Local run
 
 You can run PoshlostiOS on your local network with [lighttpd](https://www.lighttpd.net/)
 
