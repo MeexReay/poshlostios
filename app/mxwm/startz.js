@@ -19,9 +19,9 @@ async function drawWindowDecorations(ctx, x, y, width, height, title) {
     const buttonSpacing = 8;
 
     const outerX = x - borderWidth - 1;
-    const outerY = y - headerHeight - borderWidth - 1;
-    const outerWidth = width + borderWidth * 2;
-    const outerHeight = height + headerHeight + borderWidth * 2;
+    const outerY = y - headerHeight - borderWidth - 2;
+    const outerWidth = width + borderWidth * 2 + 1;
+    const outerHeight = height + headerHeight + borderWidth * 2 + 2;
 
     ctx.fillStyle = "#f4f4f4";
     ctx.fillRect(outerX, outerY, outerWidth, outerHeight)
@@ -34,23 +34,7 @@ async function drawWindowDecorations(ctx, x, y, width, height, title) {
 }
 
 async function onStart(screen_ctx) {
-    let wid, ctx = createWindow({
-        "title": "zterm",
-        "width": 500,
-        "height": 500,
-        "x": 50,
-        "y": 50,
-        "onkeydown": key => { 
-            ctx.fillStyle = "#222";
-            ctx.font = "bold 14px sans-serif";
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "left";
-            ctx.fillText(key, 10, 10);
-        }
-    })
-
-    ctx.fillStyle = "cyan"
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    executeCommand(["/app/zterm.js"])
 }
 
 async function onKeyDown(ctx, key) {
