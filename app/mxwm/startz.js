@@ -18,8 +18,8 @@ async function drawWindowDecorations(ctx, x, y, width, height, title) {
     const buttonRadius = 6;
     const buttonSpacing = 8;
 
-    const outerX = x - borderWidth;
-    const outerY = y - headerHeight - borderWidth;
+    const outerX = x - borderWidth - 1;
+    const outerY = y - headerHeight - borderWidth - 1;
     const outerWidth = width + borderWidth * 2;
     const outerHeight = height + headerHeight + borderWidth * 2;
 
