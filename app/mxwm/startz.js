@@ -50,9 +50,11 @@ async function onKeyDown(ctx, key) {
     if (key == "Escape") {
         disableGraphics()
     }
+    getWindow(selected_window).onkeydown(key)
 }
 
 async function onKeyUp(ctx, key) {
+    getWindow(selected_window).onkeyup(key)
 }
 
 let dragging_window = null
@@ -67,6 +69,13 @@ async function onMouseDown(ctx, button) {
         if (isMouseOnHeader(window)) {
             dragging_window = window["wid"]
         }
+        if (mouse_position[0] >= window.x &&
+            mouse_position[1] >= window.y &&
+            mouse_position[0] + window.width <= window.x &&
+            mouse_position[1] + window.height <= window.y) {
+            selected_window = window["wid"]
+            window.onmousedown(button)
+        }
     }
 }
 
@@ -75,6 +84,13 @@ async function onMouseUp(ctx, button) {
     
     if (isMouseOnHeader(window)) {
         dragging_window = null
+    }
+
+    if (mouse_position[0] >= window.x &&
+        mouse_position[1] >= window.y &&
+        mouse_position[0] + window.width <= window.x &&
+        mouse_position[1] + window.height <= window.y) {
+        window.onmouseup(button)
     }
 }
 
@@ -90,6 +106,13 @@ async function onMouseMove(ctx, x, y) {
     }
     
     mouse_position = [x, y]   
+
+    if (mouse_position[0] >= window.x &&
+        mouse_position[1] >= window.y &&
+        mouse_position[0] + window.width <= window.x &&
+        mouse_position[1] + window.height <= window.y) {
+        window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
+    }
 }
 
 async function main(args) {
