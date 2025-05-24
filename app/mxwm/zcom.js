@@ -23,6 +23,7 @@ function createWindow(options) {
     "onmousedown": options["onmousedown"] || (o => {}),
     "onmouseup": options["onmouseup"] || (o => {}),
     "onmousemove": options["onmousemove"] || ((x,y) => {}),
+    "onresize": options["onresize"] || ((x,y) => {}),
   }
 
   canvas.width = win["width"].toString()
@@ -53,6 +54,10 @@ function moveWindow(wid, x, y, w, h) {
       win.y = y
       win.width = w
       win.height = h
+      win.canvas.width = w
+      win.canvas.height = h
+      win.onresize(w, h)
+      break
     }
   }
 }

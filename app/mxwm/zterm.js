@@ -11,7 +11,7 @@ async function draw() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-    let y = 500 - 12
+    let y = ctx.canvas.height - 12
     for (let line of text.split("\n").reverse()) {
         ctx.fillStyle = "white";
         ctx.font = "bold 14px terminus";
@@ -190,7 +190,8 @@ async function main(args) {
         "x": 50,
         "y": 50,
         "onkeydown": onKeyDown,
-        "onkeyup": onKeyUp
+        "onkeyup": onKeyUp,
+        "onresize": (w,h) => draw()
     })
 
     draw()

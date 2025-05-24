@@ -109,6 +109,7 @@ async function onKeyUp(ctx, key) {
 }
 
 let dragging_window = null
+let resizing_window = null
 let selected_window = null
 
 function isMouseOnHeader(window) {
@@ -121,6 +122,13 @@ function isMouseInside(window) {
            mouse_position[1] >= window.y &&
            mouse_position[0] <= window.x + window.width &&
            mouse_position[1] <= window.y + window.height
+}
+
+function isMouseOnCorner(window) {
+    return window.x + window.width - 15 < mouse_position[0] &&
+           window.x + window.width + 15 > mouse_position[0] &&
+           window.y + window.height - 15 < mouse_position[1] &&
+           window.y + window.height + 15 > mouse_position[1]
 }
 
 async function onMouseDown(ctx, button) {
@@ -136,6 +144,12 @@ async function onMouseDown(ctx, button) {
             moveWindowToTop(window.wid)
             window.onmousedown(button)
         }
+        if (isMouseOnCorner(window)) {            
+            resizing_window = window["wid"]
+            selected_window = window["wid"]
+            setGraphicsCursor("nwse-resize")
+            moveWindowToTop(window.wid)
+        }
     }
 }
 
@@ -148,6 +162,9 @@ async function onMouseUp(ctx, button) {
         if (isMouseInside(window)) {
             window.onmouseup(button)
         }
+        if (isMouseOnCorner(window)) {
+            resizing_window = null
+        }
     }
 }
 
@@ -159,13 +176,20 @@ async function onMouseMove(ctx, x, y) {
     if (dragging_window != null) { 
         let window = getWindow(dragging_window)
         if (isMouseOnHeader(window)) {
-            window.x += x - mouse_position[0]
-            window.y += y - mouse_position[1]
+            moveWindow(dragging_window, window.x + (x - mouse_position[0]), window.y + (y - mouse_position[1]), window.width, window.height)
             cursor = "grabbing"
         }
     }
+
+    if (resizing_window != null) {
+        let window = getWindow(resizing_window)
+        if (isMouseOnCorner(window)) {
+            moveWindow(resizing_window, window.x, window.y, window.width + (x - mouse_position[0]), window.height + (y - mouse_position[1]))
+            cursor = "nwse-resize"
+        }
+    }
     
-    mouse_position = [x, y]   
+    mouse_position = [x, y]
 
     for (let window of listWindows()) {
         if (isMouseInside(window)) {
@@ -173,6 +197,9 @@ async function onMouseMove(ctx, x, y) {
         }
         if (dragging_window == null && isMouseOnHeader(window)) {
             cursor = "grab"
+        }
+        if (isMouseOnCorner(window)) {
+            cursor = "nwse-resize"
         }
     }
 
