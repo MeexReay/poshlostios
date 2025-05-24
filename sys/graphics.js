@@ -15,6 +15,10 @@ function enableGraphics(options={}) {
     graphics_canvas.height = window.innerHeight.toString()
     graphics_canvas.setAttribute("tabindex", "0")
 
+    graphics_canvas.addEventListener('contextmenu', event => {
+        event.preventDefault()
+    })
+
     if ("onmousemove" in options) {
         graphics_canvas.onmousemove = e => {
             options.onmousemove(e.x, e.y)

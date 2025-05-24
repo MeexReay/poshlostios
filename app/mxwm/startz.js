@@ -66,6 +66,7 @@ function moveWindowToTop(wid) {
 }
 
 let pressedKeys = []
+let pressedButtons = [false, false, false]
 
 function isPressed(key) {
     return pressedKeys.indexOf(key) !== -1
@@ -75,8 +76,6 @@ async function onKeyDown(ctx, key) {
     if (pressedKeys.indexOf(key) === -1) {
         pressedKeys.push(key)
     }
-
-    console.log(pressedKeys)
     
     if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Shift") && isPressed("Q")) {
         disableGraphics()
@@ -102,8 +101,6 @@ async function onKeyUp(ctx, key) {
     if (index !== -1) {
         pressedKeys.splice(index, 1)
     }
-    
-    console.log(pressedKeys)
     
     if (selected_window != null) getWindow(selected_window).onkeyup(key)
 }
@@ -132,38 +129,56 @@ function isMouseOnCorner(window) {
 }
 
 async function onMouseDown(ctx, button) {
+    if (button >= 0 && button <= 2) {
+        pressedButtons[button] = true
+    }
+    
     for (let window of listWindows()) {
-        if (isMouseOnHeader(window)) {
+        if (isMouseOnHeader(window) ||
+            ((selected_window == window.wid || isMouseInside(window))
+                && isPressed("Alt") && button == 0)) {
             dragging_window = window["wid"]
             selected_window = window["wid"]
             setGraphicsCursor("grabbing")
             moveWindowToTop(window.wid)
+            break
+        }
+        if (isMouseOnCorner(window) ||
+            ((selected_window == window.wid || isMouseInside(window))
+                && isPressed("Alt") && button == 2)) {
+            resizing_window = window["wid"]
+            selected_window = window["wid"]
+            setGraphicsCursor("nwse-resize")
+            moveWindowToTop(window.wid)
+            break
         }
         if (isMouseInside(window)) {
             selected_window = window["wid"]
             moveWindowToTop(window.wid)
             window.onmousedown(button)
-        }
-        if (isMouseOnCorner(window)) {            
-            resizing_window = window["wid"]
-            selected_window = window["wid"]
-            setGraphicsCursor("nwse-resize")
-            moveWindowToTop(window.wid)
+            break
         }
     }
 }
 
 async function onMouseUp(ctx, button) {
-    for (let window of listWindows()) {
-        if (isMouseOnHeader(window)) {
-            dragging_window = null
+    if (button >= 0 && button <= 2) {
+        pressedButtons[button] = false
+    }
+
+    if (dragging_window != null) {
+        if (isMouseOnHeader(getWindow(dragging_window)))
             setGraphicsCursor("grab")
-        }
+        dragging_window = null
+    }
+
+    if (resizing_window != null) {
+        resizing_window = null
+    }
+    
+    for (let window of listWindows()) {
         if (isMouseInside(window)) {
             window.onmouseup(button)
-        }
-        if (isMouseOnCorner(window)) {
-            resizing_window = null
         }
     }
 }
@@ -175,18 +190,26 @@ async function onMouseMove(ctx, x, y) {
     
     if (dragging_window != null) { 
         let window = getWindow(dragging_window)
-        if (isMouseOnHeader(window)) {
-            moveWindow(dragging_window, window.x + (x - mouse_position[0]), window.y + (y - mouse_position[1]), window.width, window.height)
-            cursor = "grabbing"
-        }
+        moveWindow(
+            dragging_window,
+            window.x + (x - mouse_position[0]),
+            window.y + (y - mouse_position[1]),
+            window.width,
+            window.height
+        )
+        cursor = "grabbing"
     }
 
     if (resizing_window != null) {
         let window = getWindow(resizing_window)
-        if (isMouseOnCorner(window)) {
-            moveWindow(resizing_window, window.x, window.y, window.width + (x - mouse_position[0]), window.height + (y - mouse_position[1]))
-            cursor = "nwse-resize"
-        }
+        moveWindow(
+            resizing_window,
+            window.x,
+            window.y,
+            window.width + (x - mouse_position[0]),
+            window.height + (y - mouse_position[1])
+        )
+        cursor = "nwse-resize"
     }
     
     mouse_position = [x, y]
