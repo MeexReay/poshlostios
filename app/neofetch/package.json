@@ -1,6 +1,6 @@
 {
     "name": "neofetch",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "neofetch damn",
     "author": "MeexReay",
     "apps": [ "neofetch.js" ],
