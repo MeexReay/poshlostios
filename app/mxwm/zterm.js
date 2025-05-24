@@ -7,18 +7,78 @@ let stdin_disable = true
 let ctx = null
 let wid = null
 
+const CHAR_WIDTH = 7
+const CHAR_HEIGHT = 18
+const TERMINAL_COLORS = ["BLACK", "DARK_BLUE", "DARK_GREEN", "DARK_CYAN", "DARK_RED", "DARK_MAGENTA", "DARK_YELLOW", "DARK_WHITE", "BRIGHT_BLACK", "BRIGHT_BLUE", "BRIGHT_GREEN", "BRIGHT_CYAN", "BRIGHT_RED", "BRIGHT_MAGENTA", "BRIGHT_YELLOW", "WHITE"]
+
+function getVarColor(name) {
+    return getComputedStyle(document.body).getPropertyValue("--"+name)
+}
+
 async function draw() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
+    ctx.font = "14px terminus";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+        
     let y = ctx.canvas.height - 12
     for (let line of text.split("\n").reverse()) {
-        ctx.fillStyle = "white";
-        ctx.font = "bold 14px terminus";
-        ctx.textBaseline = "middle";
-        ctx.textAlign = "left";
-        ctx.fillText(line, 5, y);
-        y -= 18
+        let x = 5
+        let buffer = ""
+        let color_before = getVarColor("WHITE")
+        let color = color_before
+
+        for (let char of line) {
+            let found_color = false;
+            
+            for (let term_color of TERMINAL_COLORS) {
+                if (buffer.slice(buffer.length-3-term_color.length) == "$"+term_color+"--") {
+                    color = getVarColor(term_color)
+                    buffer = buffer.slice(0, buffer.length-term_color.length-3)
+                    found_color = true
+                    break
+                }
+            }
+
+            if (buffer[buffer.length-8] == "$" &&
+                buffer[buffer.length-7] == "#" &&
+                buffer[buffer.length-6] != "#" &&
+                /^[0-9a-f]+$/i.test(buffer.slice(buffer.length-6))) {
+                color = buffer.slice(buffer.length-7)
+                buffer = buffer.slice(0, buffer.length-8)
+                found_color = true
+            }
+
+            if (buffer.endsWith("$reset")) {
+                color = getVarColor("WHITE")
+                buffer = buffer.slice(0, buffer.length-6)
+                found_color = true
+            }
+
+            buffer = buffer.replace(/\$##([0-9a-f]{6})$/i, "\$#\$1");
+            buffer = buffer.replace(/\$#([a-zA-Z]+)--$/, '\$\$1--');
+            buffer = buffer.replace(/\$#reset$/, "$reset");
+
+            if (found_color) {          
+                ctx.fillStyle = color_before;
+                ctx.fillText(buffer, x, y);
+                console.log(x, y, buffer)
+                color_before = color
+                x += buffer.length * CHAR_WIDTH
+                buffer = ""
+            }
+
+            buffer += char
+        }
+        
+        ctx.fillStyle = color_before;
+        ctx.fillText(buffer, x, y);
+
+        console.log(x, y, buffer)
+
+        y -= CHAR_HEIGHT
     }
 }
 
