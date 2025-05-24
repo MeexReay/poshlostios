@@ -65,27 +65,31 @@ function moveWindowToTop(wid) {
     window.mxwm_windows = windows
 }
 
-let altKey = false
-let shiftKey = false
-let ctrlKey = false
+let pressedKeys = []
+
+function isPressed(key) {
+    return pressedKeys.indexOf(key) !== -1
+}
 
 async function onKeyDown(ctx, key) {
-    if (key == "Control") ctrlKey = true
-    if (key == "Alt") altKey = true
-    if (key == "Shift") shiftKey = true
+    if (pressedKeys.indexOf(key) === -1) {
+        pressedKeys.push(key)
+    }
+
+    console.log(pressedKeys)
     
-    if (altKey && shiftKey && key == "Q") {
+    if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Shift") && isPressed("Q")) {
         disableGraphics()
         return
     }
 
-    if (altKey && shiftKey && key == "C") {
+    if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Shift") && isPressed("C")) {
         signalWindow(selected_window, 9)
         closeWindow(selected_window)
         return
     }
 
-    if (altKey && key == "Enter") {
+    if ((isPressed("Alt") || isPressed("Meta")) && pressedKeys.indexOf("Enter") !== -1) {
         executeCommand(["/app/zterm.js"])
         return
     }
@@ -94,10 +98,13 @@ async function onKeyDown(ctx, key) {
 }
 
 async function onKeyUp(ctx, key) {
-    if (key == "Control") ctrlKey = false
-    if (key == "Alt") altKey = false
-    if (key == "Shift") shiftKey = false
-
+    let index = pressedKeys.indexOf(key)
+    if (index !== -1) {
+        pressedKeys.splice(index, 1)
+    }
+    
+    console.log(pressedKeys)
+    
     if (selected_window != null) getWindow(selected_window).onkeyup(key)
 }
 
