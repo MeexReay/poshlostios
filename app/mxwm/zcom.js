@@ -4,6 +4,8 @@ function hasGraphicsImplementation() {
 
 /** returns wid and context */
 function createWindow(options) {
+  console.log("create", options)
+  
   let canvas = document.createElement("canvas")
 
   let wid = Date.now().toString() + Math.round(Math.random() * 100).toString()
@@ -37,7 +39,7 @@ function createWindow(options) {
     window.mxwm_windows = [ win ]
   }
 
-  return (wid, context)
+  return [wid, context]
 }
 
 function moveWindow(wid, x, y, w, h) {
@@ -68,6 +70,8 @@ function signalWindow(wid, signal) {
 }
 
 function closeWindow(wid) {
+  console.log("remove", wid)
+  
   if (!("mxwm_windows" in window)) {
     window.mxwm_windows = [ ]
   }

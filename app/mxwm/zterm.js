@@ -4,8 +4,10 @@ let text = ""
 let stdin_text = ""
 let stdin_visible = true
 let stdin_disable = true
+let ctx = null
+let wid = null
 
-async function draw(ctx) {
+async function draw() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
@@ -19,6 +21,7 @@ async function draw(ctx) {
         y -= 18
     }
 }
+
 function setStdinFlag(flag) {
     if (flag == SILENT_STDIN) {
         stdin_visible = false
@@ -42,6 +45,101 @@ async function readStdin() {
 
 async function writeStdout(wh) {
     text += wh
+    draw()
+}
+
+async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content, pos]) {
+    setStdinFlag(ENABLE_STDIN)
+
+    let start_terminal = text
+
+    // let start_cursor_pos = getCursor()
+
+    let pos = 0
+    let content = ""
+
+    while (true) {
+        let event = await pollStdinEvent()
+
+        if (event.type == "key") {
+            if (event.key == "Backspace") {
+                if (pos >= 1) {
+                    content = content.slice(0, pos - 1) + content.slice(pos)
+                    pos -= 1
+                    text = start_terminal + content
+                    // let cursor = getCursor()
+                    // setCursor(cursor[0]-1, cursor[1])
+                    // updateTerminalWOCursor()
+                }
+            } else if (event.key == "Delete") {
+                content = content.slice(0, pos) + content.slice(pos + 1)
+                text = start_terminal + content
+            //  updateTerminalWOCursor()
+            // } else if (event.key == "ArrowLeft") {
+            //     let cursor = getCursor()
+            //     if (cursor[0] > start_cursor_pos[0]) {
+            //         setCursor(cursor[0]-1, cursor[1])
+            //         pos -= 1
+            //     }
+            // } else if (event.key == "ArrowRight") {
+            //     let cursor = getCursor()
+            //     if (cursor[0] < start_cursor_pos[0] + content.length) {
+            //          setCursor(cursor[0]+1, cursor[1])
+            //          pos += 1
+            //     }
+            } else {
+                let res = on_key(event.key, event.ctrl, event.alt, event.shift, content, pos)
+                text = text.slice(0, text.length - content.length) + res[0]
+                // updateTerminal()
+                // setCursor(start_cursor_pos[0] + res[1], start_cursor_pos[1])
+                content = res[0]
+                pos = res[1]
+            }
+        } else if (event.type == "char") {
+            if (event.char == "\n") break
+            if (event.char == "\0") continue
+
+            content = content.slice(0, pos) + event.char + content.slice(pos)
+            pos += 1
+        }
+
+        draw()
+    }
+
+    setStdinFlag(DISABLE_STDIN)
+
+    return content
+}
+
+async function pollStdinEvent() {
+    let char = await readStdin()
+
+    if (char == "\r") {
+        let key = ""
+        char = await readStdin()
+        while (char != "\r") {
+            key += char
+            char = await readStdin()
+        }
+
+        let is_ctrl = key.charAt(0) == "1"
+        let is_alt = key.charAt(1) == "1"
+        let is_shift = key.charAt(2) == "1"
+        key = key.slice(3)
+
+        return {
+            "type": "key",
+            "ctrl": is_ctrl,
+            "alt": is_alt,
+            "shift": is_shift,
+            "key": key
+        }
+    }
+
+    return {
+        "type": "char",
+        "char": char
+    }
 }
 
 let altKey = false
@@ -49,7 +147,6 @@ let ctrlKey = false
 let shiftKey = false
 
 async function onKeyDown(key) {
-    console.log(key)
     if (!stdin_disable) {
         if (key == "Enter") {
             stdin_text += "\n"
@@ -72,6 +169,7 @@ async function onKeyDown(key) {
             stdin_text += "\r"+(ctrlKey ? "1" : "0")+(altKey ? "1" : "0")+(shiftKey ? "1" : "0")+key+"\r"
         }
     }
+    draw()
 }
 
 async function onKeyUp(key) {
@@ -84,8 +182,8 @@ async function onKeyUp(key) {
     }
 }
 
-async function main(args) {  
-    let wid, ctx = createWindow({
+async function main(args) {
+    [wid, ctx] = createWindow({
         "title": "zterm",
         "width": 500,
         "height": 500,
@@ -95,12 +193,20 @@ async function main(args) {
         "onkeyup": onKeyUp
     })
 
-    setTimeout(() => {
-        executeCommand(["/app/posh.js"], readStdin, writeStdout, setStdinFlag)
-    })
+    draw()
 
-    while (graphics_canvas != null) {
-        draw(ctx)
-        await new Promise(res => setTimeout(res, 100));
-    }
+    await executeCommand(
+        ["/app/posh.js"],
+        readStdin,
+        writeStdout,
+        setStdinFlag,
+        readLine,
+        pollStdinEvent
+    ).promise
+
+    ctx = null
+
+    console.log("posh exit")
+
+    closeWindow(wid)
 }

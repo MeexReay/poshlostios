@@ -157,7 +157,6 @@ var clipboard_collect = document.getElementById("clipboard-collect")
 document.onkeydown = (e) => {
     let key = e.key;
     if (!disable_stdin) {
-        console.log(e.key)
         if (key == "Enter") {
             stdin += "\n"
             if (!silent_stdin) {

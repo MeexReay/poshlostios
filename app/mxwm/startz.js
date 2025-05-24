@@ -6,13 +6,27 @@ async function drawScreen(ctx) {
     ctx.fillStyle = "darkcyan"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     
+    ctx.fillStyle = "cyan";
+    ctx.font = "bold 14px comic-sans";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    ctx.fillText(`Alt+Shift+Q - выключить оконный менеджер | Alt+Enter - включить zterm | Alt+Shift+C - закрыть окно`, 10, 16);
+
     for (const win of window.mxwm_windows) {
-        drawWindowDecorations(ctx, win.x, win.y, win.width, win.height, win.title)
+        drawWindowDecorations(
+            ctx,
+            win.wid == selected_window,
+            win.x,
+            win.y,
+            win.width,
+            win.height,
+            win.title
+        )
         ctx.drawImage(win.canvas, win.x, win.y);
     }
 }
 
-async function drawWindowDecorations(ctx, x, y, width, height, title) {
+async function drawWindowDecorations(ctx, is_selected, x, y, width, height, title) {
     const borderRadius = 8;
     const borderWidth = 1;
     const buttonRadius = 6;
@@ -23,7 +37,7 @@ async function drawWindowDecorations(ctx, x, y, width, height, title) {
     const outerWidth = width + borderWidth * 2 + 2;
     const outerHeight = height + headerHeight + borderWidth * 2 + 3;
 
-    ctx.fillStyle = "#f4f4f4";
+    ctx.fillStyle = is_selected ? "#f4f4f4" : "#d3f4d3";
     ctx.fillRect(outerX, outerY, outerWidth, outerHeight)
 
     ctx.fillStyle = "#222";
@@ -34,17 +48,56 @@ async function drawWindowDecorations(ctx, x, y, width, height, title) {
 }
 
 async function onStart(screen_ctx) {
-    executeCommand(["/app/zterm.js"])
+    
 }
 
-async function onKeyDown(ctx, key) {
-    if (key == "Escape") {
-        disableGraphics()
+function moveWindowToTop(wid) {
+    let my_win
+    let windows = []
+    for (let win of window.mxwm_windows) {
+        if (win.wid == wid) {
+            my_win = win
+            continue
+        }
+        windows.push(win)
     }
+    windows.push(my_win)
+    window.mxwm_windows = windows
+}
+
+let altKey = false
+let shiftKey = false
+let ctrlKey = false
+
+async function onKeyDown(ctx, key) {
+    if (key == "Control") ctrlKey = true
+    if (key == "Alt") altKey = true
+    if (key == "Shift") shiftKey = true
+    
+    if (altKey && shiftKey && key == "Q") {
+        disableGraphics()
+        return
+    }
+
+    if (altKey && shiftKey && key == "C") {
+        signalWindow(selected_window, 9)
+        closeWindow(selected_window)
+        return
+    }
+
+    if (altKey && key == "Enter") {
+        executeCommand(["/app/zterm.js"])
+        return
+    }
+
     if (selected_window != null) getWindow(selected_window).onkeydown(key)
 }
 
 async function onKeyUp(ctx, key) {
+    if (key == "Control") ctrlKey = false
+    if (key == "Alt") altKey = false
+    if (key == "Shift") shiftKey = false
+
     if (selected_window != null) getWindow(selected_window).onkeyup(key)
 }
 
@@ -69,9 +122,11 @@ async function onMouseDown(ctx, button) {
             dragging_window = window["wid"]
             selected_window = window["wid"]
             setGraphicsCursor("grabbing")
+            moveWindowToTop(window.wid)
         }
         if (isMouseInside(window)) {
             selected_window = window["wid"]
+            moveWindowToTop(window.wid)
             window.onmousedown(button)
         }
     }
