@@ -146,6 +146,7 @@ async function onMouseDown(ctx, button) {
                 && isPressed("Alt") && button == 0)) {
             if (window.movable) {
                 setGraphicsCursor("grabbing")
+                last_cursor = true
                 dragging_window = window["wid"]
             }
             if (window.selectable) {
@@ -160,6 +161,7 @@ async function onMouseDown(ctx, button) {
             if (window.resizable) {
                 resizing_window = window["wid"]
                 setGraphicsCursor("nwse-resize")
+                last_cursor = true
             }
             if (window.selectable) {
                 moveWindowToTop(window.wid)
@@ -184,8 +186,10 @@ async function onMouseUp(ctx, button) {
     }
 
     if (dragging_window != null) {
-        if (isMouseOnHeader(getWindow(dragging_window)))
+        if (isMouseOnHeader(getWindow(dragging_window))) {
             setGraphicsCursor("grab")
+            last_cursor = true
+        }
         dragging_window = null
     }
 
@@ -201,6 +205,7 @@ async function onMouseUp(ctx, button) {
 }
 
 let mouse_position = [0, 0]
+let last_cursor = false
 
 async function onMouseMove(ctx, x, y) {
     let cursor = "default"
@@ -238,12 +243,18 @@ async function onMouseMove(ctx, x, y) {
         if (dragging_window == null && window.movable && isMouseOnHeader(window)) {
             cursor = "grab"
         }
-        if (qinsoq.resizable && isMouseOnCorner(window)) {
+        if (window.resizable && isMouseOnCorner(window)) {
             cursor = "nwse-resize"
         }
     }
 
-    setGraphicsCursor(cursor)
+    if (cursor != "default") {
+        last_cursor = true
+        setGraphicsCursor(cursor)
+    } else if (last_cursor) {
+        last_cursor = false
+        setGraphicsCursor(cursor)
+    }
 }
 
 async function main(args) {

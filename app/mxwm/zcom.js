@@ -16,6 +16,7 @@ function createWindow(options) {
     "y": options["y"] || 0,
     "width": options["width"] || options["w"] || 200,
     "height": options["height"] || options["h"] || 200,
+    "app_id": options["app_id"] || options["title"],
     "wid": wid,
     "onsignal": options["onsignal"] || (o => {}),
     "onkeydown": options["onkeydown"] || (o => {}),

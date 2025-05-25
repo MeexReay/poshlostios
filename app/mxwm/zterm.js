@@ -250,6 +250,7 @@ async function onKeyUp(key) {
 async function main(args) {
     [wid, ctx] = createWindow({
         "title": "zterm",
+        "app_id": "zterm",
         "width": 500,
         "height": 500,
         "x": 50,
