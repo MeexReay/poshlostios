@@ -32,10 +32,27 @@ function getDiskInfo() {
 
 // Function to get CPU, GPU, and memory information
 function getSystemInfo() {
-    const cpuInfo = navigator.hardwareConcurrency;
+    const cpuInfo = (() => {try {
+        return navigator.hardwareConcurrency
+    } catch (e) {
+        return 1
+    }})()
   
-    const memoryInfo = navigator.deviceMemory;
-    const totalJSHeap = performance.memory.totalJSHeapSize / (1024 * 1024);
+    const memoryInfo = (() => {
+        try {
+            return navigator.deviceMemory
+        } catch (e) {
+            return 8
+        }
+    })()
+
+    const totalJSHeap = (() => {
+        try {
+            return performance.memory.totalJSHeapSize / (1024 * 1024)
+        } catch (e) {
+            return 1
+        }
+    })();
   
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -53,8 +70,8 @@ function getSystemInfo() {
   
     return [
         cpuInfo + " cores", 
-        memoryInfo ? memoryInfo * 1024 + ' MB' : 'Not supported', 
-        totalJSHeap.toFixed(2) + ' MB',
+        memoryInfo ? memoryInfo * 1024 + 'MB' : '8096MB', 
+        totalJSHeap.toFixed(2) + 'MB',
         gpuInfo ? `${gpuInfo.renderer}` : 'Poshlosti GGraphics 1.0.233'       
     ]
 }

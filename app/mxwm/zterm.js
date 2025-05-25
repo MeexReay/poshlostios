@@ -69,7 +69,6 @@ async function draw() {
             if (found_color) {          
                 ctx.fillStyle = color_before;
                 ctx.fillText(buffer, x, y);
-                console.log(x, y, buffer)
                 color_before = color
                 x += buffer.length * CHAR_WIDTH
                 buffer = ""
@@ -80,8 +79,6 @@ async function draw() {
         
         ctx.fillStyle = color_before;
         ctx.fillText(buffer, x, y);
-
-        console.log(x, y, buffer)
 
         y -= CHAR_HEIGHT
     }
