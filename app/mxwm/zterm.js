@@ -248,7 +248,9 @@ async function onKeyUp(key) {
 }
 
 async function main(args) {
-    [wid, ctx] = createWindow({
+    let run = true
+
+    let d = createWindow({
         "title": "zterm",
         "app_id": "zterm",
         "width": 500,
@@ -257,23 +259,35 @@ async function main(args) {
         "y": 50,
         "onkeydown": onKeyDown,
         "onkeyup": onKeyUp,
-        "onresize": (w,h) => draw()
+        "onresize": (w,h) => draw(),
+        "onsignal": (s) => {
+            if (s == 9) {
+                run = false
+            }
+        }
     })
+
+    wid = d[0]
+    ctx = d[1]
 
     draw()
 
-    await executeCommand(
+    executeCommand(
         ["/app/posh.js"],
         readStdin,
         writeStdout,
         setStdinFlag,
         readLine,
         pollStdinEvent
-    ).promise
+    ).promise.then(() => {
+        run = false
+    })
+
+    while (run && graphics_canvas != null) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+    }
 
     ctx = null
-
-    console.log("posh exit")
 
     closeWindow(wid)
 

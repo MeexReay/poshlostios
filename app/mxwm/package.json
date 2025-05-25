@@ -1,8 +1,8 @@
 {
     "name": "mxwm",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Mega eXtreme Window Manager",
     "author": "MeexReay",
-    "apps": [ "zcom.js", "startz.js", "zterm.js", "poki.js" ],
-    "configs": []
+    "apps": [ "zcom.js", "startz.js", "zterm.js", "poki.js", "zhelp.js" ],
+    "configs": [ "poki.json" ]
 }

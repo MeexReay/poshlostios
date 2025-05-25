@@ -11,17 +11,10 @@ let ctx = null
 
 const HEIGHT = 64
 
-const APPS = [
-    {
-        "id": "zterm",
-        "title": "zterm - terminal emulator",
-        "icon": "app/mxwm/zterm.png",
-        "script": ["/app/zterm.js"]
-    }
-]
+const APPS = JSON.parse(readFile("/config/poki.json"))
 
-const ICON_SIZE = 60
-const ICON_PADDING = 4
+const ICON_SIZE = 52
+const ICON_PADDING = 6
 
 function findRect() {
     return [0, graphics_canvas.height - HEIGHT, graphics_canvas.width, HEIGHT]
@@ -37,6 +30,23 @@ async function draw() {
         ctx.drawImage(app.icon_image, x, ICON_PADDING, ICON_SIZE, ICON_SIZE)
         x += ICON_SIZE + ICON_PADDING
     }
+
+    ctx.font = "bold 20px sans-serif";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "black";
+
+    const now = new Date();
+
+    const timeString = now.toTimeString().slice(0, 5)
+
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = String(now.getFullYear()).slice(-2);
+    const dateString = `${day}.${month}.${year}`
+
+    ctx.fillText(timeString, ctx.canvas.width - 65, 22);
+    ctx.fillText(dateString, ctx.canvas.width - 65, 47);
 }
 
 async function onUpdate() {

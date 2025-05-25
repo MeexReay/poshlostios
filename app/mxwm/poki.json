@@ -1,0 +1,14 @@
+[
+    {
+        "id": "zhelp",
+        "title": "help page",
+        "icon": "app/mxwm/zhelp.png",
+        "script": ["/app/zhelp.js"]
+    },
+    {
+        "id": "zterm",
+        "title": "zterm - terminal emulator",
+        "icon": "app/mxwm/zterm.png",
+        "script": ["/app/zterm.js"]
+    }
+]
