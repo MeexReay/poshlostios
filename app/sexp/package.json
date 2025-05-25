@@ -1,0 +1,7 @@
+{
+    "name": "sexp",
+    "version": "0.0.0-test",
+    "description": "Simple Explorer Program",
+    "author": "MeexReay",
+    "apps": [ "sexp.js" ]
+}

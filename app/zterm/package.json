@@ -3,6 +3,5 @@
     "version": "0.1.0",
     "description": "Zcom Terminal Emulator",
     "author": "MeexReay",
-    "apps": [ "zterm.js" ],
-    "configs": [ ]
+    "apps": [ "zterm.js" ]
 }

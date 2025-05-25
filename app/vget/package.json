@@ -3,6 +3,5 @@
     "version": "0.1.0",
     "description": "Vulgar get",
     "author": "MeexReay",
-    "apps": [ "vget.js" ],
-    "configs": []
+    "apps": [ "vget.js" ]
 }

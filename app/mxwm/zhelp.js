@@ -32,6 +32,7 @@ function draw(ctx) {
 async function main(args) {
     let [wid, ctx] = createWindow({ 
         "title": "help page",
+        "app_id": "zhelp",
         "x": 50,
         "y": 50,
         "width": 420,

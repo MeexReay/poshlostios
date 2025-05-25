@@ -4,6 +4,5 @@
     "description": "Mega eXtreme Window Manager",
     "author": "MeexReay",
     "apps": [ "zcom.js", "startz.js", "zhelp.js" ],
-    "configs": [],
-    "depends": [ "poki", "zterm" ]
+    "depends": [ "poki", "zterm", "sexp" ]
 }
