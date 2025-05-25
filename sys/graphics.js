@@ -19,6 +19,15 @@ function enableGraphics(options={}) {
         event.preventDefault()
     })
 
+    if ("onmousewheel" in options) {
+        graphics_canvas.onwheel = e => {
+            options.onmousewheel(e.deltaX, e.deltaY, e.deltaZ)
+            if (e.ctrlKey == true) {
+                e.preventDefault();
+            }
+        }
+    }
+
     if ("onmousemove" in options) {
         graphics_canvas.onmousemove = e => {
             options.onmousemove(e.x, e.y)

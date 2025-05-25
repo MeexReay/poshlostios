@@ -7,8 +7,11 @@ let stdin_disable = true
 let ctx = null
 let wid = null
 
-const CHAR_WIDTH = 7
-const CHAR_HEIGHT = 14
+let char_width = 7
+let char_height = 14
+
+let text_scroll = 0
+
 const TERMINAL_COLORS = [
     "BLACK",
     "DARK_BLUE", "DARK_GREEN", "DARK_CYAN", "DARK_RED", "DARK_MAGENTA", "DARK_YELLOW", "DARK_WHITE",
@@ -24,11 +27,11 @@ async function draw() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-    ctx.font = "14px terminus";
+    ctx.font = char_height+"px terminus";
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
         
-    let y = ctx.canvas.height - 12
+    let y = ctx.canvas.height - char_height / 2 - 5 + text_scroll
     for (let line of text.split("\n").reverse()) {
         let x = 5
         let buffer = ""
@@ -70,7 +73,7 @@ async function draw() {
                 ctx.fillStyle = color_before;
                 ctx.fillText(buffer, x, y);
                 color_before = color
-                x += buffer.length * CHAR_WIDTH
+                x += buffer.length * char_width
                 buffer = ""
             }
 
@@ -80,7 +83,7 @@ async function draw() {
         ctx.fillStyle = color_before;
         ctx.fillText(buffer, x, y);
 
-        y -= CHAR_HEIGHT
+        y -= char_height
     }
 }
 
@@ -209,6 +212,7 @@ let ctrlKey = false
 let shiftKey = false
 
 async function onKeyDown(key) {
+    text_scroll = 0
     if (!stdin_disable) {
         if (key == "Enter") {
             stdin_text += "\n"
@@ -234,6 +238,23 @@ async function onKeyDown(key) {
     draw()
 }
 
+async function onMouseWheel(y) {
+    console.log(y)
+    if (ctrlKey) {
+        if (y < 0) {
+            char_height *= 1.05
+            char_width *= 1.05
+        } else {
+            char_height /= 1.05
+            char_width /= 1.05
+        }
+    } else {
+        text_scroll -= y * 0.5
+    }
+
+    draw()
+}
+
 async function onKeyUp(key) {
     if (key == "Alt") {
         altKey = false
@@ -256,6 +277,7 @@ async function main(args) {
         "y": 50,
         "onkeydown": onKeyDown,
         "onkeyup": onKeyUp,
+        "onmousewheel": onMouseWheel,
         "onresize": (w,h) => draw(),
         "onsignal": (s) => {
             if (s == 9) {

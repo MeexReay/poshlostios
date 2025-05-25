@@ -257,11 +257,25 @@ async function onMouseMove(ctx, x, y) {
     }
 }
 
+async function onMouseWheel(ctx, x, y, z) {
+    for (let window of listWindows()) {
+        if (isMouseInside(window)) {
+            selected_window = window["wid"]
+        }
+    }
+
+    if (selected_window != null) {
+        let window = getWindow(selected_window)
+        window.onmousewheel(y,x,z)
+    }
+}
+
 async function main(args) {
     let ctx = null
     
     enableGraphics({
         "onmousemove": (x, y) => onMouseMove(ctx, x, y),
+        "onmousewheel": (x, y, z) => onMouseWheel(ctx, x, y, z),
         "onmousedown": (btn) => onMouseDown(ctx, btn),
         "onmouseup": (btn) => onMouseUp(ctx, btn),
         "onkeydown": (key) => onKeyDown(ctx, key),

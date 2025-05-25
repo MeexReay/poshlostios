@@ -25,6 +25,7 @@ function createWindow(options) {
     "onmouseup": options["onmouseup"] || (o => {}),
     "onmousemove": options["onmousemove"] || ((x,y) => {}),
     "onresize": options["onresize"] || ((x,y) => {}),
+    "onmousewheel": options["onmousewheel"] || options["onwheel"] || options["onscroll"] || ((y,x,z) => {}),
     "onupdate": options["onupdate"] || (() => {}),
     "decorated": "decorated" in options ? options["decorated"] : true,
     "selectable": "selectable" in options ? options["selectable"] : true,
