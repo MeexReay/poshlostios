@@ -1,54 +1,57 @@
 eval(readFile("/app/zcom.js"))
 
-const headerHeight = 32;
+const headerHeight = 24;
 
 async function drawScreen(ctx) {
     ctx.fillStyle = "darkcyan"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     
-    ctx.fillStyle = "cyan";
-    ctx.font = "bold 14px comic-sans";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "left";
-    ctx.fillText(`Alt+Shift+Q - выключить оконный менеджер | Alt+Enter - включить zterm | Alt+Shift+C - закрыть окно`, 10, 16);
+    // ctx.fillStyle = "cyan";
+    // ctx.font = "bold 14px comic-sans";
+    // ctx.textBaseline = "middle";
+    // ctx.textAlign = "left";
+    // ctx.fillText(`Alt+Shift+Q - выключить оконный менеджер | Alt+Enter - включить zterm | Alt+Shift+C - закрыть окно`, 10, 16);
 
     for (const win of window.mxwm_windows) {
-        drawWindowDecorations(
-            ctx,
-            win.wid == selected_window,
-            win.x,
-            win.y,
-            win.width,
-            win.height,
-            win.title
-        )
+        if (win.decorated) {
+            drawWindowDecorations(
+                ctx,
+                win.wid == selected_window,
+                win.x,
+                win.y,
+                win.width,
+                win.height,
+                win.title
+            )
+        }
+        
         ctx.drawImage(win.canvas, win.x, win.y);
     }
 }
 
 async function drawWindowDecorations(ctx, is_selected, x, y, width, height, title) {
-    const borderRadius = 8;
-    const borderWidth = 1;
-    const buttonRadius = 6;
-    const buttonSpacing = 8;
+    const borderWidth = 2;
 
-    const outerX = x - borderWidth - 1;
-    const outerY = y - headerHeight - borderWidth - 2;
-    const outerWidth = width + borderWidth * 2 + 2;
-    const outerHeight = height + headerHeight + borderWidth * 2 + 3;
+    const outerX = x - borderWidth;
+    const outerY = y - headerHeight - borderWidth;
+    const outerWidth = width + borderWidth * 2;
+    const outerHeight = height + headerHeight + borderWidth * 2;
 
-    ctx.fillStyle = is_selected ? "#f4f4f4" : "#d3f4d3";
+    const titleX = outerX + 10
+    const titleY = outerY + 14
+
+    ctx.fillStyle = is_selected ? "#f4f4f4" : "#a3d4a3";
     ctx.fillRect(outerX, outerY, outerWidth, outerHeight)
 
     ctx.fillStyle = "#222";
-    ctx.font = "bold 14px sans-serif";
+    ctx.font = "bold 14px terminus";
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
-    ctx.fillText(title, outerX + 12, outerY + headerHeight / 2);
+    ctx.fillText(title, titleX, titleY);
 }
 
 async function onStart(screen_ctx) {
-    
+    executeCommand(["/app/poki.js"])    
 }
 
 function moveWindowToTop(wid) {
@@ -81,8 +84,12 @@ async function onKeyDown(ctx, key) {
         disableGraphics()
         return
     }
-
-    if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Shift") && isPressed("C")) {
+    
+    let to_close = getWindow(selected_window)
+    if (to_close != null && to_close.closable &&
+        (isPressed("Alt") || isPressed("Meta")) &&
+        isPressed("Shift") &&
+        isPressed("C")) {
         signalWindow(selected_window, 9)
         closeWindow(selected_window)
         return
@@ -137,24 +144,34 @@ async function onMouseDown(ctx, button) {
         if (isMouseOnHeader(window) ||
             ((selected_window == window.wid || isMouseInside(window))
                 && isPressed("Alt") && button == 0)) {
-            dragging_window = window["wid"]
-            selected_window = window["wid"]
-            setGraphicsCursor("grabbing")
-            moveWindowToTop(window.wid)
+            if (window.movable) {
+                setGraphicsCursor("grabbing")
+                dragging_window = window["wid"]
+            }
+            if (window.selectable) {
+                selected_window = window["wid"]
+                moveWindowToTop(window.wid)
+            }
             break
         }
         if (isMouseOnCorner(window) ||
             ((selected_window == window.wid || isMouseInside(window))
                 && isPressed("Alt") && button == 2)) {
-            resizing_window = window["wid"]
-            selected_window = window["wid"]
-            setGraphicsCursor("nwse-resize")
-            moveWindowToTop(window.wid)
+            if (window.resizable) {
+                resizing_window = window["wid"]
+                setGraphicsCursor("nwse-resize")
+            }
+            if (window.selectable) {
+                moveWindowToTop(window.wid)
+                selected_window = window["wid"]
+            }
             break
         }
         if (isMouseInside(window)) {
-            selected_window = window["wid"]
-            moveWindowToTop(window.wid)
+            if (window.selectable) {
+                selected_window = window["wid"]
+                moveWindowToTop(window.wid)
+            }
             window.onmousedown(button)
             break
         }
@@ -218,10 +235,10 @@ async function onMouseMove(ctx, x, y) {
         if (isMouseInside(window)) {
             window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
         }
-        if (dragging_window == null && isMouseOnHeader(window)) {
+        if (dragging_window == null && window.movable && isMouseOnHeader(window)) {
             cursor = "grab"
         }
-        if (isMouseOnCorner(window)) {
+        if (qinsoq.resizable && isMouseOnCorner(window)) {
             cursor = "nwse-resize"
         }
     }
@@ -237,7 +254,12 @@ async function main(args) {
         "onmousedown": (btn) => onMouseDown(ctx, btn),
         "onmouseup": (btn) => onMouseUp(ctx, btn),
         "onkeydown": (key) => onKeyDown(ctx, key),
-        "onkeyup": (key) => onKeyUp(ctx, key)
+        "onkeyup": (key) => onKeyUp(ctx, key),
+        "onresize": () => {
+            for (let window of listWindows()) {
+                window.onupdate()
+            }
+        }
     })
 
     window.mxwm_windows = []

@@ -9,7 +9,12 @@ let wid = null
 
 const CHAR_WIDTH = 7
 const CHAR_HEIGHT = 14
-const TERMINAL_COLORS = ["BLACK", "DARK_BLUE", "DARK_GREEN", "DARK_CYAN", "DARK_RED", "DARK_MAGENTA", "DARK_YELLOW", "DARK_WHITE", "BRIGHT_BLACK", "BRIGHT_BLUE", "BRIGHT_GREEN", "BRIGHT_CYAN", "BRIGHT_RED", "BRIGHT_MAGENTA", "BRIGHT_YELLOW", "WHITE"]
+const TERMINAL_COLORS = [
+    "BLACK",
+    "DARK_BLUE", "DARK_GREEN", "DARK_CYAN", "DARK_RED", "DARK_MAGENTA", "DARK_YELLOW", "DARK_WHITE",
+    "BRIGHT_BLACK", "BRIGHT_BLUE", "BRIGHT_GREEN", "BRIGHT_CYAN", "BRIGHT_RED", "BRIGHT_MAGENTA", "BRIGHT_YELLOW",
+    "WHITE"
+]
 
 function getVarColor(name) {
     return getComputedStyle(document.body).getPropertyValue("--"+name)
@@ -270,4 +275,6 @@ async function main(args) {
     console.log("posh exit")
 
     closeWindow(wid)
+
+    return 0
 }

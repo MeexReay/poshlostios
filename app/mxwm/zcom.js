@@ -24,6 +24,12 @@ function createWindow(options) {
     "onmouseup": options["onmouseup"] || (o => {}),
     "onmousemove": options["onmousemove"] || ((x,y) => {}),
     "onresize": options["onresize"] || ((x,y) => {}),
+    "onupdate": options["onupdate"] || (() => {}),
+    "decorated": "decorated" in options ? options["decorated"] : true,
+    "selectable": "selectable" in options ? options["selectable"] : true,
+    "closable": "closable" in options ? options["closable"] : true,
+    "movable": "movable" in options ? options["movable"] : true,
+    "resizable": "resizable" in options ? options["resizable"] : true,
   }
 
   canvas.width = win["width"].toString()

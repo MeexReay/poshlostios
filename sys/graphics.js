@@ -56,6 +56,9 @@ function enableGraphics(options={}) {
     window.addEventListener("resize", (event) => {
         graphics_canvas.width = window.innerWidth.toString()
         graphics_canvas.height = window.innerHeight.toString()
+        if ("onresize" in options) {
+            options.onresize()
+        }
     })
     
     document.body.appendChild(graphics_canvas)
