@@ -212,6 +212,14 @@ let ctrlKey = false
 let shiftKey = false
 
 async function onKeyDown(key) {
+    if (key == "Alt") {
+        altKey = true
+    } else if (key == "Shift") {
+        shiftKey = true
+    } else if (key == "Control") {
+        ctrlKey = true
+    }
+
     text_scroll = 0
     if (!stdin_disable) {
         if (key == "Enter") {
@@ -225,12 +233,6 @@ async function onKeyDown(key) {
                 text += key
             }
             stdin_text += key
-        } else if (key == "Alt") {
-            altKey = true
-        } else if (key == "Shift") {
-            shiftKey = true
-        } else if (key == "Control") {
-            ctrlKey = true
         } else {
             stdin_text += "\r"+(ctrlKey ? "1" : "0")+(altKey ? "1" : "0")+(shiftKey ? "1" : "0")+key+"\r"
         }
