@@ -214,8 +214,8 @@ async function onMouseMove(ctx, x, y) {
         let window = getWindow(dragging_window)
         moveWindow(
             dragging_window,
-            window.x + (x - mouse_position[0]),
-            window.y + (y - mouse_position[1]),
+            Math.min(Math.max(window.x + (x - mouse_position[0]), 0), ctx.canvas.width),
+            Math.min(Math.max(window.y + (y - mouse_position[1]), headerHeight), ctx.canvas.height - headerHeight),
             window.width,
             window.height
         )
@@ -228,8 +228,8 @@ async function onMouseMove(ctx, x, y) {
             resizing_window,
             window.x,
             window.y,
-            window.width + (x - mouse_position[0]),
-            window.height + (y - mouse_position[1])
+            Math.max(window.width + (x - mouse_position[0]), 0),
+            Math.max(window.height + (y - mouse_position[1]), 0)
         )
         cursor = "nwse-resize"
     }
