@@ -4,7 +4,7 @@ var processes = []
 
 function executeCommand(
     args,
-    terminal
+    term=terminal
 ) {
     let id = new Date().getMilliseconds().toString()+(Math.random()*100)
     let func_content = readFile(args[0])
@@ -20,7 +20,7 @@ function executeCommand(
         "promise": new Promise((resolve, reject) => {
             setTimeout(() => {
                 try {
-                    resolve(func(args, terminal))
+                    resolve(func(args, term))
                 } catch (e) {
                     reject(e)
                 }
