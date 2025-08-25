@@ -16,7 +16,8 @@ var terminal = {
     "text": "",
     "size": getTerminalSize(),
     "silent_stdin": false,
-    "disable_stdin": true
+    "disable_stdin": true,
+    "update": updateTerminal
 }
 
 function getStrippedTerminal() {

@@ -4,11 +4,15 @@ const DISABLE_STDIN = 3
 const ENABLE_STDIN = 4
 
 async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content, pos]) {
+    terminal.update()
+    
+    let cursor = getCursor()
+    let start_cursor_pos = [ cursor[0], cursor[1] ]
+
     setStdinFlag(ENABLE_STDIN)
+    setStdinFlag(SILENT_STDIN)
 
     let start_terminal = terminal.text
-
-    let start_cursor_pos = getCursor()
 
     let pos = 0
     let content = ""
@@ -22,43 +26,51 @@ async function readLine(on_key=(key, ctrl, alt, shift, content, pos) => [content
                     content = content.slice(0, pos - 1) + content.slice(pos)
                     pos -= 1
                     terminal.text = start_terminal + content
-                    let cursor = getCursor()
-                    setCursor(cursor[0]-1, cursor[1])
+                    cursor[0] -= 1
+                    setCursor(cursor[0], cursor[1])
                 }
             } else if (event.key == "Delete") {
                 content = content.slice(0, pos) + content.slice(pos + 1)
                 terminal.text = start_terminal + content
             } else if (event.key == "ArrowLeft") {
-                let cursor = getCursor()
-                if (cursor[0] > start_cursor_pos[0]) {
-                    setCursor(cursor[0]-1, cursor[1])
+                if (pos >= 1) {
+                    cursor[0] -= 1
+                    setCursor(cursor[0], cursor[1])
                     pos -= 1
                 }
             } else if (event.key == "ArrowRight") {
-                let cursor = getCursor()
-                if (cursor[0] < start_cursor_pos[0] + content.length) {
-                    setCursor(cursor[0]+1, cursor[1])
+                if (pos < content.length) {
+                    cursor[0] += 1
+                    setCursor(cursor[0], cursor[1])
                     pos += 1
                 }
             } else {
                 let res = on_key(event.key, event.ctrl, event.alt, event.shift, content, pos)
-                terminal.text = terminal.text.slice(0, terminal.text.length - content.length) + res[0]
-                setCursor(start_cursor_pos[0] + res[1], start_cursor_pos[1])
+                terminal.text = start_terminal + res[0]
+                cursor[0] = start_cursor_pos[0] + res[1]
+                setCursor(cursor[0], cursor[1])
                 content = res[0]
                 pos = res[1]
             }
 
             continue
         } else if (event.type == "char") {
-            if (event.char == "\n") break
+            if (event.char == "\n") {
+                terminal.text += "\n"
+                break
+            }
             if (event.char == "\0") continue
 
             content = content.slice(0, pos) + event.char + content.slice(pos)
+            terminal.text = start_terminal + content
+            cursor[0] += 1
+            setCursor(cursor[0], cursor[1])
             pos += 1
         }
     }
 
     setStdinFlag(DISABLE_STDIN)
+    setStdinFlag(RENDER_STDIN)
 
     return content
 }
@@ -118,6 +130,7 @@ function setStdinFlag(flag) {
     } else if (flag == ENABLE_STDIN) {
         terminal.disable_stdin = false
     }
+    terminal.update()
 }
 
 function getCursorIndex() {
