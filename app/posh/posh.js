@@ -25,8 +25,7 @@ async function processCommand(command, args) {
                 await writeStdout("\nСтатус код: "+code+"\n")
             }
         } catch (e) {
-            console.log(e)
-            await writeStdout("Не запустилася\n")
+            await writeStdout("Не запустилася:\n"+e+"\n")
         }
     } else {
         await writeStdout("Твоя команда "+executable+" не найдена :3\n")

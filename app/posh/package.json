@@ -1,8 +1,15 @@
 {
-    "name": "posh",
-    "version": "0.1.1",
-    "description": "Poshlosti Shell",
-    "author": "MeexReay",
-    "apps": [ "posh.js", "meow.js", "cd.js", "clear.js" ],
-    "configs": [ "posh.json" ]
+  "name": "posh",
+  "version": "0.1.2",
+  "description": "Poshlosti Shell",
+  "author": "MeexReay",
+  "apps": [
+    "posh.js",
+    "meow.js",
+    "cd.js",
+    "clear.js"
+  ],
+  "configs": [
+    "posh.json"
+  ]
 }
