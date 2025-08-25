@@ -1,10 +1,6 @@
 const CHAR_SIZE = [10, 22]
 const CURSOR_OFFSET = [10, 10]
 
-var terminal = document.getElementById("terminal")
-var terminal_text = ""
-var last_stdin_length = 0
-
 function getTerminalSize() {
     return [
         Math.round((window.innerWidth - CURSOR_OFFSET[0] * 2) / CHAR_SIZE[0]),
@@ -12,116 +8,38 @@ function getTerminalSize() {
     ]
 }
 
-function writeTerminalAtCursor(content) {
-    let cursor_index = getCursorIndex()
-    terminal_text = terminal_text.slice(0, cursor_index) + content + terminal_text.slice(cursor_index)
-    setCursor(cursor_pos[0]+1, cursor_pos[1])
-    last_stdin_length += 1
-    updateTerminalWOCursor()
-}
-
-function writeTerminal(content) {
-    terminal_text += content
-    last_stdin_length = 0
-    updateTerminal()
-}
-
-function replaceTerminal(content) {
-    terminal_text = content
-    updateTerminal()
-}
-
-function trimTerminal(length) {
-    terminal_text = terminal_text.substring(0, terminal_text.length-length)
-    updateTerminal()
+var terminal_element = document.getElementById("terminal")
+var terminal = {
+    "stdout": "",
+    "stdin": "",
+    "cursor": [0, 0],
+    "text": "",
+    "size": getTerminalSize(),
+    "silent_stdin": false,
+    "disable_stdin": true
 }
 
 function getStrippedTerminal() {
-    return stripColors(getTerminal())
-}
-
-function getTerminal() {
-    return terminal_text
-}
-
-function setTerminal(content) {
-    terminal_text = content
-}
-
-function clearTerminal() {
-    terminal_text = ""
-    updateTerminal()
-}
-
-function updateTerminalWOCursor() {
-    terminal.innerHTML = convertColorCodes(stripHtml(terminal_text))
+    return stripColors(terminal.text)
 }
 
 function updateTerminal() {
-    let stripped_terminal = getStrippedTerminal()
-    setCursor(
-        stripped_terminal.split("\n").reverse()[0].length, 
-        stripped_terminal.split("\n").length-1
-    )
-    updateTerminalWOCursor()
+    if (!terminal.silent_stdin) {
+        let stripped_terminal = getStrippedTerminal()
+        terminal.cursor = [
+            stripped_terminal.split("\n").reverse()[0].length, 
+            stripped_terminal.split("\n").length-1
+        ]
+    }
+    
+    terminal_element.innerHTML = convertColorCodes(stripHtml(terminal.text))
 }
 
 var cursor = document.getElementById("cursor")
-var cursor_pos = [0, 0]
-
-function getCursorIndex() {
-    let lines = terminal_text.split("\n");
-    let index = 0;
-
-    for (let y = 0; y < lines.length; y++) {
-        let line = lines[y];
-        let strippedLine = stripColors(line);
-        let length = strippedLine.length;
-
-        if (y === cursor_pos[1]) {
-            let visiblePos = cursor_pos[0];
-            let realPos = 0;
-            let visibleCount = 0;
-
-            for (let i = 0; i < line.length; i++) {
-                if (line[i] === "$") {
-                    let match = line.substring(i).match(/^(\$#([0-9a-fA-F]{6})|\$[A-Z_]+--|\$reset)/);
-                    if (match) {
-                        i += match[0].length - 1;
-                        realPos += match[0].length;
-                        continue;
-                    }
-                }
-
-                if (visibleCount === visiblePos) {
-                    return index + realPos;
-                }
-
-                visibleCount++;
-                realPos++;
-            }
-
-            return index + realPos;
-        }
-
-        index += line.length + 1;
-    }
-
-    return index;
-}
-
-function getCursor() {
-    return cursor_pos
-}
-
-function setCursor(x, y) {
-    cursor_pos = [x, y]
-    updateCursor()
-}
 
 function updateCursor() {
-    cursor.style["top"] = cursor_pos[1] * CHAR_SIZE[1] + CURSOR_OFFSET[1] + "px"
-    cursor.style["left"] = cursor_pos[0] * CHAR_SIZE[0] + CURSOR_OFFSET[0] + "px"
+    cursor.style["top"] = terminal.cursor[1] * CHAR_SIZE[1] + CURSOR_OFFSET[1] + "px"
+    cursor.style["left"] = terminal.cursor[0] * CHAR_SIZE[0] + CURSOR_OFFSET[0] + "px"
     cursor.scrollIntoView({behavior: "smooth", inline: "end"})
 }
 
@@ -156,21 +74,22 @@ var clipboard_collect = document.getElementById("clipboard-collect")
 
 document.onkeydown = (e) => {
     let key = e.key;
-    if (!disable_stdin) {
+    
+    if (!terminal.disable_stdin) {
         if (key == "Enter") {
-            stdin += "\n"
-            if (!silent_stdin) {
-                writeTerminal("\n")
+            terminal.stdin += "\n"
+            if (!terminal.silent_stdin) {
+                terminal.text += "\n"
             }
         } else if (key.length == 1) {
             if (key == "\0") return
             if (e.ctrlKey && key == "v") return
-            stdin += key
-            if (!silent_stdin) {
-                writeTerminalAtCursor(key)
+            terminal.stdin += key
+            if (!terminal.silent_stdin) {
+                terminal.text += key;
             }
         } else {
-            stdin += "\r"+(e.ctrlKey ? "1" : "0")+(e.altKey ? "1" : "0")+(e.shiftKey ? "1" : "0")+e.key+"\r"
+            terminal.stdin += "\r"+(e.ctrlKey ? "1" : "0")+(e.altKey ? "1" : "0")+(e.shiftKey ? "1" : "0")+e.key+"\r"
         }
     }
 }
@@ -187,7 +106,13 @@ clipboard_collect.onpaste = (e) => {
     let paste = (e.clipboardData || window.clipboardData).getData("text");
 
     if (paste != null) {
-        stdin += paste.replace("\r", "")
-        writeTerminal(paste)
+        terminal.stdin += paste.replace("\r", "")
+        terminal.text += paste;
     }
 }
+
+setInterval(() => {
+    terminal.size = getTerminalSize()
+    updateTerminal()
+    updateCursor()
+}, 10);
