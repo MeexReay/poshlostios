@@ -1,7 +1,9 @@
 {
-    "name": "kfc",
-    "version": "0.1.2",
-    "description": "Keep Files Customized",
-    "author": "MeexReay",
-    "apps": [ "kfc.js" ]
+  "name": "kfc",
+  "version": "0.1.3",
+  "description": "Keep Files Customized",
+  "author": "MeexReay",
+  "apps": [
+    "kfc.js"
+  ]
 }

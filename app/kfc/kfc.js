@@ -18,7 +18,7 @@ async function cropToScreen(text, x, y, width, height) {
 }
 
 async function printScreen(screen_length, start_cursor, pos, content, mode, pos, camera, width, height) {
-    trimTerminal(screen_length)
+    terminal.text = terminal.text.substring(0, terminal.text.length - screen_length)
     let screen = makeColorCodesPrintable(await cropToScreen(content, camera[0], camera[1], width, height - 1))
     await writeStdout(screen)
     let status_line = `\nmode: ${mode} | size: ${content.length} | lines: ${content.split("\n").length} | x: ${pos[0]} | y: ${pos[1]}`
@@ -116,7 +116,7 @@ async function main(args) {
         } else if (event.type == "char") {
             if (mode == "normal") {
                 if (event.char == ":") {
-                    trimTerminal(status_length)
+                    terminal.text = terminal.text.substring(0, terminal.text.length - status_length)
 
                     writeStdout(":")
     
@@ -124,7 +124,7 @@ async function main(args) {
 
                     let command = await readLine()
 
-                    trimTerminal(1)
+                    terminal.text = terminal.text.substring(0, terminal.text.length - 1)
     
                     setStdinFlag(ENABLE_STDIN)
                     setStdinFlag(SILENT_STDIN)
@@ -163,7 +163,7 @@ async function main(args) {
     setStdinFlag(RENDER_STDIN)
     setStdinFlag(DISABLE_STDIN)
 
-    trimTerminal(screen_length)
+    terminal.text = terminal.text.substring(0, terminal.text.length - screen_length)
 
     await writeStdout("\n")
 
