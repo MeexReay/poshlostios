@@ -1,4 +1,5 @@
 async function main(args) {
-    clearTerminal()
+    terminal.text = ""
+    terminal.update()
     return 0
 }
