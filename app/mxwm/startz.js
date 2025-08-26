@@ -139,8 +139,9 @@ async function onMouseDown(ctx, button) {
     if (button >= 0 && button <= 2) {
         pressedButtons[button] = true
     }
-    
-    for (let window of listWindows()) {
+
+    let iter = window => {
+        if (window == null) return
         if (isMouseOnHeader(window) ||
             ((selected_window == window.wid || isMouseInside(window))
                 && isPressed("Alt") && button == 0)) {
@@ -153,7 +154,7 @@ async function onMouseDown(ctx, button) {
                 selected_window = window["wid"]
                 moveWindowToTop(window.wid)
             }
-            break
+            return true
         }
         if (isMouseOnCorner(window) ||
             ((selected_window == window.wid || isMouseInside(window)) &&
@@ -168,7 +169,7 @@ async function onMouseDown(ctx, button) {
                 moveWindowToTop(window.wid)
                 selected_window = window["wid"]
             }
-            break
+            return true
         }
         if (isMouseInside(window)) {
             if (window.selectable) {
@@ -176,8 +177,16 @@ async function onMouseDown(ctx, button) {
                 moveWindowToTop(window.wid)
             }
             window.onmousedown(button)
-            break
+            return true
         }
+        return false
+    }
+
+    if (iter(getWindow(selected_window))) return
+    
+    for (let window of listWindows()) {
+        if (window.wid == selected_window) continue
+        if (iter(window)) return
     }
 }
 
