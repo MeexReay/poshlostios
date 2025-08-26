@@ -5,8 +5,15 @@ function createContext(width, height) {
   canvas.width = width.toString()
   canvas.height = height.toString()
   let context = canvas.getContext("2d")
-  // context.canvas = canvas
   return context
+}
+
+function drawContext(src, dest, x , y) {
+  try {
+    dest.drawImage(src.canvas, x, y)
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 class EmptyWidget {
@@ -145,7 +152,7 @@ class StackLayout extends EmptyWidget {
     
     this.mapChilds((c, s) => {
       let [x, y] = this.posToPoses(pos)
-      this.ctx.drawImage(c.draw().canvas, x, y)
+      drawContext(c.draw(), this.ctx, x, y)
       pos += s
     })
     
@@ -229,10 +236,6 @@ class QutiWindow {
     }
     
     let [wid, ctx] = createWindow(window)
-    // let wobj = getWindow(wid)
-
-    // ctx.canvas = wobj.canvas
-
     this.child.init(ctx, this.width, this.height)
 
     spawned.wid = wid

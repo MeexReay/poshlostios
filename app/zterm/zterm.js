@@ -192,6 +192,8 @@ async function main(args) {
         "app_id": "zterm",
         "width": 500,
         "height": 500,
+        "min_width": 55,
+        "min_height": 10,
         "onkeydown": onKeyDown,
         "onkeyup": onKeyUp,
         "onmousewheel": onMouseWheel,

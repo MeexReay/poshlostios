@@ -38,6 +38,10 @@ function createWindow(options) {
     "closable": "closable" in options ? options["closable"] : true,
     "movable": "movable" in options ? options["movable"] : true,
     "resizable": "resizable" in options ? options["resizable"] : true,
+    "min_width": options["min_width"] || options["minwidth"] || 0,
+    "max_width": options["max_width"] || options["maxwidth"] || 999999999999,
+    "min_height": options["min_height"] || options["minheight"] || 0,
+    "max_height": options["max_height"] || options["maxheight"] || 999999999999,
   }
 
   if (!("x" in options) && !("y" in options)) {
@@ -85,11 +89,14 @@ function moveWindow(wid, x, y, w, h) {
     if (win["wid"] == wid) {
       win.x = x
       win.y = y
-      win.width = w
-      win.height = h
-      win.canvas.width = w
-      win.canvas.height = h
-      win.onresize(w, h)
+      let rw = Math.min(Math.max(w, win.min_width), win.max_width)
+      let rh = Math.min(Math.max(h, win.min_height), win.max_height)
+      console.log(rw, rh, win)
+      win.width = rw
+      win.height = rh
+      win.canvas.width = rw
+      win.canvas.height = rh
+      win.onresize(rw, rh)
       break
     }
   }
