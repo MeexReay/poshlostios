@@ -8,7 +8,7 @@ async function processCommand(command, args) {
     let executable = command
     if (!executable.startsWith("/")) {
         if (executable.includes("/")) {
-            executable = cwd + "/" + executable
+            executable = terminal.cwd + "/" + executable
         } else {
             executable = "/app/" + executable
         }
@@ -20,7 +20,7 @@ async function processCommand(command, args) {
 
     if (hasFile(executable)) {
         try {
-            let code = await executeCommand([executable].concat(args)).promise
+            let code = await executeCommand([executable].concat(args), terminal).promise
             if (code != 0) {
                 await writeStdout("\nСтатус код: "+code+"\n")
             }
@@ -33,6 +33,7 @@ async function processCommand(command, args) {
 }
 
 async function main(args) {
+    console.log(terminal)
     if (args.length > 1) {
         await processCommand(args[1], args.slice(2))
     }
@@ -50,7 +51,7 @@ async function main(args) {
     }
 
     while (true) {
-        await writeStdout(prompt.replace("{cwd}", cwd))
+        await writeStdout(prompt.replace("{cwd}", terminal.cwd))
 
         let command = await readLine((key, ctrl, alt, shift, content, pos) => {
             if (key == "ArrowDown") {

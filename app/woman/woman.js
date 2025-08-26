@@ -37,7 +37,7 @@ async function main(args) {
 
 Вот как выглядит функция:
   
-  executeCommand(args, read=readStdin, write=writeStdout) -> {"id": string, "name": args.join(" "), "promise": Promise}
+  executeCommand(args, terminal) -> {"id": string, "name": args.join(" "), "promise": Promise}
 
 Первый аргумент при вызове команды должен быть путем до исполняемого файла
 Функция возвращает промис в поле promise, чтобы дождаться конца команды используйте await

@@ -17,7 +17,8 @@ var terminal = {
     "size": getTerminalSize(),
     "silent_stdin": false,
     "disable_stdin": true,
-    "update": updateTerminal
+    "update": updateTerminal,
+    "cwd": "/home"
 }
 
 function getStrippedTerminal() {

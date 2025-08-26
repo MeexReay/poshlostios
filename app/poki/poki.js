@@ -88,7 +88,7 @@ async function onMouseDown(button) {
                 mouse_position[1] >= ICON_PADDING &&
                 mouse_position[0] <= x + ICON_SIZE &&
                 mouse_position[1] <= ICON_PADDING + ICON_SIZE) {
-                executeCommand(app.script)
+                executeCommand(app.script, terminal)
             }
             x += ICON_SIZE + ICON_PADDING
         }

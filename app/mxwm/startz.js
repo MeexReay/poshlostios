@@ -51,7 +51,7 @@ async function drawWindowDecorations(ctx, is_selected, x, y, width, height, titl
 }
 
 async function onStart(screen_ctx) {
-    executeCommand(["/app/poki.js"])    
+    executeCommand(["/app/poki.js"], terminal)    
 }
 
 function moveWindowToTop(wid) {
@@ -96,7 +96,7 @@ async function onKeyDown(ctx, key) {
     }
 
     if ((isPressed("Alt") || isPressed("Meta")) && pressedKeys.indexOf("Enter") !== -1) {
-        executeCommand(["/app/zterm.js"])
+        executeCommand(["/app/zterm.js"], terminal)
         return
     }
 

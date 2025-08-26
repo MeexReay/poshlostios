@@ -186,7 +186,7 @@ function isFolder(path) {
 }
 
 function simplifyPath(path) {
-    if (!path.startsWith("/")) path = cwd+"/" + path;
+    if (!path.startsWith("/")) path = terminal.cwd+"/" + path;
 
     const segments = path.split('/');
     const stack = [];

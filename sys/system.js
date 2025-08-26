@@ -1,18 +1,20 @@
-var cwd = "/home"
-
 var processes = []
+
+var io_module = null
+var fs_module = null
 
 function executeCommand(
     args,
-    term=terminal
+    term
 ) {
+    while (io_module == null || fs_module == null) {}
     let id = new Date().getMilliseconds().toString()+(Math.random()*100)
     let func_content = readFile(args[0])
     if (func_content == null || !func_content.includes("function main")) return
     let func = new Function(
         "args",
         "terminal",
-        func_content+"\nreturn main(args)"
+        fs_module+"\n"+io_module+"\n"+func_content+"\nreturn main(args)"
     )
     let process = {
         "id": id,
@@ -53,6 +55,12 @@ if (Object.keys(fs_mapping).length == 0) {
     resetSystem()
 }
     
-executeCommand(STARTUP_COMMAND)
+fetch("/sys/io.js")
+    .then(i => i.text())
+    .then(i => io_module = i)
+    .then(_ => fetch("/sys/fs.js"))
+    .then(i => i.text())
+    .then(i => fs_module = i)
+    .then(_ => executeCommand(STARTUP_COMMAND, terminal))
 
 var start_date = new Date()
