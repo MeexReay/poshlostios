@@ -3,7 +3,7 @@ eval(readFile("/app/zcom.js"))
 const headerHeight = 24;
 
 async function drawScreen(ctx) {
-    ctx.fillStyle = "darkcyan"
+    ctx.fillStyle = config.background
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     
     // ctx.fillStyle = "cyan";
@@ -51,7 +51,9 @@ async function drawWindowDecorations(ctx, is_selected, x, y, width, height, titl
 }
 
 async function onStart(screen_ctx) {
-    executeCommand(["/app/poki.js"], terminal)    
+    for (let command of config.startup_commands) {
+        executeCommand(command, terminal)
+    }
 }
 
 function moveWindowToTop(wid) {
@@ -281,8 +283,12 @@ async function onMouseWheel(ctx, x, y, z) {
     }
 }
 
+let config = null
+
 async function main(args) {
     let ctx = null
+
+    config = JSON.parse(readFile("/config/mxwm.json"))
     
     enableGraphics({
         "onmousemove": (x, y) => onMouseMove(ctx, x, y),
