@@ -35,6 +35,14 @@ function getVarColor(name) {
 }
 
 async function updateTerminal() {
+    if (!destterm.silent_stdin) {
+        let stripped_terminal = stripColors(destterm.text)
+        destterm.cursor = [
+            stripped_terminal.split("\n").reverse()[0].length, 
+            stripped_terminal.split("\n").length-1
+        ]
+    }
+    
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
@@ -96,6 +104,19 @@ async function updateTerminal() {
 
         y -= char_height
     }
+
+    let [curx, cury] = [ destterm.cursor[0] + 1, destterm.cursor[1] + 1 ]
+    curx *= char_width
+    cury *= char_height
+
+    cury = y + cury
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#fff"
+    ctx.beginPath()
+    ctx.moveTo(curx, cury + 5)
+    ctx.lineTo(curx + char_width, cury + 5)
+    ctx.stroke()
 }
 
 var altKey = false
