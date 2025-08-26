@@ -121,6 +121,14 @@ async function updatePackage(name, url) {
             writeFile("/app/"+app, await fetchText(url+"/"+app))
         }
     }
+    
+    if ("configs" in package) {
+        for (const config of package.configs) {
+            if (!hasFile("/config/"+config)) {
+                writeFile("/config/"+config, await fetchText(url+"/"+config))
+            }
+        }
+    }
 
     writeFile("/etc/ppm/"+name, JSON.stringify(package))
 
