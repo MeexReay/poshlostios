@@ -1,8 +1,17 @@
 eval(readFile("/app/zcom.js"))
 
+function createContext(width, height) {
+  let canvas = document.createElement("canvas")
+  canvas.width = width.toString()
+  canvas.height = height.toString()
+  let context = canvas.getContext("2d")
+  // context.canvas = canvas
+  return context
+}
+
 class EmptyWidget {
-  constructor() {}
-  init(ctx, width, height) {}
+  constructor() { this.ctx = null }
+  init(ctx, width, height) { this.ctx = ctx }
   onKeyDown(key) {}
   onKeyUp(key) {}
   onMouseDown(button) {}
@@ -10,37 +19,122 @@ class EmptyWidget {
   onMouseMove(x, y) {}
   onMouseWheel(y, x, z) {}
   onResize(width, height) {}
-  draw() {}
+  draw() { return this.ctx }
+}
+
+class ColorWidget extends EmptyWidget {
+  constructor(color) {
+    super()
+    this.color = color
+    this.ctx = null
+  }
+  init(ctx, width, height) {
+    this.ctx = ctx
+  }
+  onResize(width, height) {
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+  }
+  draw() {
+    this.ctx.fillStyle = this.color
+    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.ctx.fill();
+    return this.ctx
+  }
+}
+
+class StackLayout extends EmptyWidget {
+  constructor() {
+    super()
+    this.children = []
+    this.inited = false
+    this.ctx = null
+  }
+  pushChild(child) {
+    if (this.inited) {
+      let child_height = this.height / this.children.length
+
+      child.init(createContext(this.width, child_height), this.width, child_height)
+      
+      for (let child2 of this.children) {
+        child2.onResize(this.width, child_height)
+      }
+    }
+    
+    this.children.push(child)
+  }
+  removeChild(child) {
+    this.children = this.children.filter(o => o != child)
+  }
+  init(ctx, width, height) {
+    this.ctx = ctx
+    this.width = width
+    this.height = height
+    
+    let child_height = this.height / this.children.length
+
+    for (let child of this.children) {
+      child.init(createContext(this.width, child_height), this.width, child_height)
+    }
+
+    this.inited = true
+    console.log(this)
+  }
+  onResize(width, height) {
+    this.width = width
+    this.height = height
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+
+    let child_height = this.height / this.children.length
+    
+    for (let child of this.children) {
+      child.onResize(this.width, child_height)
+    }
+
+    this.draw()
+  }
+  draw() {
+    let child_height = this.height / this.children.length
+    let child_y = 0
+    
+    for (let child of this.children) {
+      this.ctx.drawImage(child.draw().canvas, 0, child_y)
+      child_y += child_height
+    }
+    
+    return this.ctx
+  }
 }
 
 class QutiWindowBuilder {
   constructor() {
-    this.title = "Unnamed Window"
-    this.width = 500
-    this.height = 500
-    this.resizable = true
-    this.app_id = this.title
-    this.decorated = true
-    this.child = new EmptyWidget()
+    this._title = "Unnamed Window"
+    this._width = 500
+    this._height = 500
+    this._resizable = true
+    this._app_id = this.title
+    this._decorated = true
+    this._child = new EmptyWidget()
   }
 
-  title(title) { this.title = title; return this }
-  width(width) { this.width = width; return this }
-  height(height) { this.height = height; return this }
-  resizable(resizable) { this.resizable = resizable; return this }
-  app_id(app_id) { this.app_id = app_id; return this }
-  decorated(decorated) { this.decorated = decorated; return this }
-  child(child) { this.child = child; return this }
+  title(title) { this._title = title; return this }
+  width(width) { this._width = width; return this }
+  height(height) { this._height = height; return this }
+  resizable(resizable) { this._resizable = resizable; return this }
+  app_id(app_id) { this._app_id = app_id; return this }
+  decorated(decorated) { this._decorated = decorated; return this }
+  child(child) { this._child = child; return this }
 
   build() {
     return new QutiWindow(
-      this.title,
-      this.width,
-      this.height,
-      this.resizable,
-      this.app_id,
-      this.decorated,
-      this.child
+      this._title,
+      this._width,
+      this._height,
+      this._resizable,
+      this._app_id,
+      this._decorated,
+      this._child
     )
   }
 }
@@ -74,13 +168,13 @@ class QutiWindow {
       "app_id": this.app_id,
       "decorated": this.decorated,
       "resizable": this.resizable,
-      "onmouseup": this.child.onMouseUp,
-      "onmousedown": this.child.onMouseDown,
-      "onmousewheel": this.child.onMouseWheel,
-      "onkeydown": this.child.onKeyDown,
-      "onkeyup": this.child.onKeyUp,
-      "onresize": this.child.onResize,
-      "onupdate": this.child.draw,
+      "onmouseup": o => this.child.onMouseUp(o),
+      "onmousedown": o => this.child.onMouseDown(o),
+      "onmousewheel": (x,y,z) => this.child.onMouseWheel(x,y,z),
+      "onkeydown": o => this.child.onKeyDown(o),
+      "onkeyup": o => this.child.onKeyUp(o),
+      "onresize": (w,h) => this.child.onResize(w,h),
+      "onupdate": () => this.child.draw(),
       "onsignal": (s) => {
         if (s == 9) {
           spawned.close()
@@ -89,6 +183,9 @@ class QutiWindow {
     }
     
     let [wid, ctx] = createWindow(window)
+    // let wobj = getWindow(wid)
+
+    // ctx.canvas = wobj.canvas
 
     this.child.init(ctx, this.width, this.height)
 
@@ -125,7 +222,14 @@ class SpawnedQutiWindow {
 }
 
 async function main(args) {
-  let window = QutiWindow.builder().build()
+  let layout = new StackLayout()
+  layout.pushChild(new ColorWidget("#f00"))
+  layout.pushChild(new ColorWidget("#0f0"))
+  layout.pushChild(new ColorWidget("#00f"))
+  let window = QutiWindow.builder()
+    .child(layout)
+    .build()
   let spawned = window.spawn()
   await spawned.mainloop()
+  return 0
 }
