@@ -2,6 +2,14 @@ function hasGraphicsImplementation() {
   return true
 }
 
+function getSelected() {
+  return window.mxwm_selected
+}
+
+function setSelected(wid) {
+  window.mxwm_selected = wid
+}
+
 /** returns wid and context */
 function createWindow(options) {
   console.log("create", options)
@@ -12,8 +20,6 @@ function createWindow(options) {
 
   let win = {
     "title": options["title"],
-    "x": options["x"] || 0,
-    "y": options["y"] || 0,
     "width": options["width"] || options["w"] || 200,
     "height": options["height"] || options["h"] || 200,
     "app_id": options["app_id"] || options["title"],
@@ -34,6 +40,21 @@ function createWindow(options) {
     "resizable": "resizable" in options ? options["resizable"] : true,
   }
 
+  if (!("x" in options) && !("y" in options)) {
+    let selected = getWindow(getSelected())
+    console.log(selected)
+    if (selected != null) {
+      win.x = selected.x + 20
+      win.y = selected.y + 20
+    } else {
+      win.x = 20
+      win.y = 20
+    }
+  } else {
+    win.x = options.x
+    win.y = options.y
+  }
+
   canvas.width = win["width"].toString()
   canvas.height = win["height"].toString()
 
@@ -46,6 +67,10 @@ function createWindow(options) {
     window.mxwm_windows.push(win)
   } else {
     window.mxwm_windows = [ win ]
+  }
+
+  if (win.selectable) {
+    setSelected(wid)
   }
 
   return [wid, context]

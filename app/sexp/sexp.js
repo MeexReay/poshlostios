@@ -10,8 +10,6 @@ async function main(args) {
 
     [wid, ctx] = createWindow({ 
         "title": "sexp",
-        "x": 50,
-        "y": 50,
         "width": 500,
         "height": 500,
         "onresize": () => draw(ctx)

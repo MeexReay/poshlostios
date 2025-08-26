@@ -16,7 +16,7 @@ async function drawScreen(ctx) {
         if (win.decorated) {
             drawWindowDecorations(
                 ctx,
-                win.wid == selected_window,
+                win.wid == getSelected(),
                 win.x,
                 win.y,
                 win.width,
@@ -85,13 +85,13 @@ async function onKeyDown(ctx, key) {
         return
     }
     
-    let to_close = getWindow(selected_window)
+    let to_close = getWindow(getSelected())
     if (to_close != null && to_close.closable &&
         (isPressed("Alt") || isPressed("Meta")) &&
         isPressed("Shift") &&
         isPressed("C")) {
-        signalWindow(selected_window, 9)
-        closeWindow(selected_window)
+        signalWindow(getSelected(), 9)
+        closeWindow(getSelected())
         return
     }
 
@@ -100,7 +100,7 @@ async function onKeyDown(ctx, key) {
         return
     }
 
-    let selected = getWindow(selected_window)
+    let selected = getWindow(getSelected())
     if (selected != null) selected.onkeydown(key)
 }
 
@@ -110,13 +110,12 @@ async function onKeyUp(ctx, key) {
         pressedKeys.splice(index, 1)
     }
     
-    let selected = getWindow(selected_window)
+    let selected = getWindow(getSelected())
     if (selected != null) selected.onkeyup(key)
 }
 
 let dragging_window = null
 let resizing_window = null
-let selected_window = null
 
 function isMouseOnHeader(window) {
     return window.x < mouse_position[0] && mouse_position[0] < window.x + window.width &&
@@ -145,7 +144,7 @@ async function onMouseDown(ctx, button) {
     let iter = window => {
         if (window == null) return
         if (isMouseOnHeader(window) ||
-            ((selected_window == window.wid || isMouseInside(window))
+            ((getSelected() == window.wid || isMouseInside(window))
                 && isPressed("Alt") && button == 0)) {
             if (window.movable) {
                 setGraphicsCursor("grabbing")
@@ -153,13 +152,13 @@ async function onMouseDown(ctx, button) {
                 dragging_window = window["wid"]
             }
             if (window.selectable) {
-                selected_window = window["wid"]
+                setSelected(window["wid"])
                 moveWindowToTop(window.wid)
             }
             return true
         }
         if (isMouseOnCorner(window) ||
-            ((selected_window == window.wid || isMouseInside(window)) &&
+            ((getSelected() == window.wid || isMouseInside(window)) &&
             isPressed("Alt") &&
             button == 2)) {
             if (window.resizable) {
@@ -169,13 +168,13 @@ async function onMouseDown(ctx, button) {
             }
             if (window.selectable) {
                 moveWindowToTop(window.wid)
-                selected_window = window["wid"]
+                setSelected(window["wid"])
             }
             return true
         }
         if (isMouseInside(window)) {
             if (window.selectable) {
-                selected_window = window["wid"]
+                setSelected(window["wid"])
                 moveWindowToTop(window.wid)
             }
             window.onmousedown(button)
@@ -184,10 +183,10 @@ async function onMouseDown(ctx, button) {
         return false
     }
 
-    if (iter(getWindow(selected_window))) return
+    if (iter(getWindow(getSelected()))) return
     
     for (let window of listWindows().toReversed()) {
-        if (window.wid == selected_window) continue
+        if (window.wid == getSelected()) continue
         if (iter(window)) return
     }
 }
@@ -272,12 +271,12 @@ async function onMouseMove(ctx, x, y) {
 async function onMouseWheel(ctx, x, y, z) {
     for (let window of listWindows()) {
         if (isMouseInside(window)) {
-            selected_window = window["wid"]
+            setSelected(window["wid"])
         }
     }
 
-    if (selected_window != null) {
-        let window = getWindow(selected_window)
+    if (getSelected() != null) {
+        let window = getWindow(getSelected())
         window.onmousewheel(y,x,z)
     }
 }
@@ -300,6 +299,7 @@ async function main(args) {
     })
 
     window.mxwm_windows = []
+    window.mxwm_selected = null
 
     ctx = getGraphics()
 
