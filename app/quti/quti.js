@@ -59,26 +59,48 @@ class StackLayout extends EmptyWidget {
     this.direction = "v"
     return this
   }
-  pushChild(child) {
+  getTotalWantedSize() {
+    let total_size = 0
+    for (let child of this.children)
+      total_size += child.wanted_size
+    return total_size
+  }
+  getActualSize(child) {
+    let total_size = this.getTotalWantedSize()
+    return child.wanted_size / total_size * this.primarySize()
+  }
+  mapChilds(callback) {
+    let total_size = this.getTotalWantedSize()
+    for (let child of this.children)
+      callback(child, child.wanted_size / total_size * this.primarySize())
+  }
+  primarySize() {
+    if (this.direction == "v")
+      return this.height
+    return this.width
+  }
+  sizeToSizes(size) {
+    if (this.direction == "v")
+      return [this.width, size]
+    return [size, this.height]
+  }
+  posToPoses(size) {
+    if (this.direction == "v")
+      return [0, size]
+    return [size, 0]
+  }
+  pushChild(child, wanted_size=1) {
+    child.wanted_size = wanted_size
+    
     if (this.inited) {
-      let child_height = this.height / this.children.length
-      let child_width = this.width / this.children.length
-
-      if (this.direction == "v") {
-        child_width = this.width
-      } else {
-        child_height = this.height
-      }
-
+      let size = this.getActualSize(child)
+      let [child_width, child_height] = this.sizeToSizes(size)
+      
       child.init(
         createContext(child_width, child_height),
         child_width,
         child_height
       )
-      
-      for (let child2 of this.children) {
-        child2.onResize(child_width, child_height)
-      }
     }
     
     this.children.push(child)
@@ -90,65 +112,42 @@ class StackLayout extends EmptyWidget {
     this.ctx = ctx
     this.width = width
     this.height = height
-    
-    let child_height = this.height / this.children.length
-    let child_width = this.width / this.children.length
 
-    if (this.direction == "v") {
-      child_width = this.width
-    } else {
-      child_height = this.height
-    }
+    this.mapChilds((c, s) => {
+      console.log(c, s)
+      let [child_width, child_height] = this.sizeToSizes(s)
 
-    for (let child of this.children) {
-      child.init(
+      c.init(
         createContext(child_width, child_height),
         child_width,
         child_height
       )
-    }
+    })
 
-    this.inited = true
+   this.inited = true
   }
   onResize(width, height) {
     this.width = width
     this.height = height
     this.ctx.canvas.width = width
     this.ctx.canvas.height = height
-
-    let child_height = this.height / this.children.length
-    let child_width = this.width / this.children.length
-
-    if (this.direction == "v") {
-      child_width = this.width
-    } else {
-      child_height = this.height
-    }
     
-    for (let child of this.children) {
-      child.onResize(child_width, child_height)
-    }
+    this.mapChilds((c, s) => {
+      let [child_width, child_height] = this.sizeToSizes(s)
+      
+      c.onResize(child_width, child_height)
+    })
 
     this.draw()
   }
   draw() {
-    if (this.direction == "v") {
-      let child_height = this.height / this.children.length
-      let child_y = 0
+    let pos = 0
     
-      for (let child of this.children) {
-        this.ctx.drawImage(child.draw().canvas, 0, child_y)
-        child_y += child_height
-      }
-    } else {
-      let child_width = this.width / this.children.length
-      let child_x = 0
-  
-      for (let child of this.children) {
-        this.ctx.drawImage(child.draw().canvas, child_x, 0)
-        child_x += child_width
-      }
-    }
+    this.mapChilds((c, s) => {
+      let [x, y] = this.posToPoses(pos)
+      this.ctx.drawImage(c.draw().canvas, x, y)
+      pos += s
+    })
     
     return this.ctx
   }
@@ -269,12 +268,16 @@ class SpawnedQutiWindow {
 }
 
 async function main(args) {
-  let layout = new StackLayout()
-  layout.pushChild(new ColorWidget("#f00"))
-  layout.pushChild(new ColorWidget("#0f0"))
-  layout.pushChild(new ColorWidget("#00f"))
+  let hlayout = new StackLayout()
+  hlayout.pushChild(new ColorWidget("#f00"), 1)
+  hlayout.pushChild(new ColorWidget("#0f0"), 0.5)
+  let vlayout = new StackLayout().vertical()
+  vlayout.pushChild(new ColorWidget("#f00"), 1)
+  vlayout.pushChild(new ColorWidget("#0f0"), 0.5)
+  vlayout.pushChild(new ColorWidget("#00f"), 0.25)
+  hlayout.pushChild(vlayout, 1)
   let window = QutiWindow.builder()
-    .child(layout)
+    .child(hlayout)
     .build()
   let spawned = window.spawn()
   await spawned.mainloop()
