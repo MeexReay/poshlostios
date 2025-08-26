@@ -156,8 +156,9 @@ async function onMouseDown(ctx, button) {
             break
         }
         if (isMouseOnCorner(window) ||
-            ((selected_window == window.wid || isMouseInside(window))
-                && isPressed("Alt") && button == 2)) {
+            ((selected_window == window.wid || isMouseInside(window)) &&
+            isPressed("Alt") &&
+            button == 2)) {
             if (window.resizable) {
                 resizing_window = window["wid"]
                 setGraphicsCursor("nwse-resize")

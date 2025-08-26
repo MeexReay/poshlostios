@@ -1,22 +1,25 @@
 eval(readFile("/app/zcom.js"))
 
+let char_width = 7
+let char_height = 14
+
 var destterm = {
     "stdout": "",
     "stdin": "",
     "cursor": [0,0],
     "text": "",
-    "size": [500, 500],
+    "size": [Math.round(500 / char_width), Math.round(500 / char_height)],
     "silent_stdin": false,
     "disable_stdin": true,
     "update": updateTerminal,
     "cwd": terminal.cwd
 }
 
+let width = 500
+let height = 500
+
 let ctx = null
 let wid = null
-
-let char_width = 7
-let char_height = 14
 
 let text_scroll = 0
 
@@ -130,7 +133,6 @@ async function onKeyDown(key) {
 }
 
 async function onMouseWheel(y) {
-    console.log(y)
     if (ctrlKey) {
         if (y < 0) {
             char_height *= 1.05
@@ -139,6 +141,7 @@ async function onMouseWheel(y) {
             char_height /= 1.05
             char_width /= 1.05
         }
+        updateDestTermSize()
     } else {
         text_scroll -= y * 0.5
     }
@@ -156,6 +159,10 @@ async function onKeyUp(key) {
     }
 }
 
+function updateDestTermSize() {
+    destterm.size = [Math.round(width / char_width), Math.round(height / char_height)]
+}
+
 async function main(args) {
     let run = true
 
@@ -170,7 +177,9 @@ async function main(args) {
         "onkeyup": onKeyUp,
         "onmousewheel": onMouseWheel,
         "onresize": (w,h) => {
-            terminal.size = [w, h]
+            width = w
+            height = h
+            updateDestTermSize()
             updateTerminal()
         },
         "onsignal": (s) => {

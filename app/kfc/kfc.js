@@ -66,7 +66,7 @@ async function main(args) {
     let camera = [0, 0]
 
     let start_cursor = getCursor()
-    let [width, height] = getTerminalSize()
+    let [width, height] = terminal.size
     let [screen_length, status_length] = await printScreen(0, start_cursor, pos, content, mode, pos, camera, width, height)
 
 
