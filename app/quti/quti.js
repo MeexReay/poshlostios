@@ -49,15 +49,35 @@ class StackLayout extends EmptyWidget {
     this.children = []
     this.inited = false
     this.ctx = null
+    this.direction = "h"
+  }
+  horizontal() {
+    this.direction = "h"
+    return this
+  }
+  vertical() {
+    this.direction = "v"
+    return this
   }
   pushChild(child) {
     if (this.inited) {
       let child_height = this.height / this.children.length
+      let child_width = this.width / this.children.length
 
-      child.init(createContext(this.width, child_height), this.width, child_height)
+      if (this.direction == "v") {
+        child_width = this.width
+      } else {
+        child_height = this.height
+      }
+
+      child.init(
+        createContext(child_width, child_height),
+        child_width,
+        child_height
+      )
       
       for (let child2 of this.children) {
-        child2.onResize(this.width, child_height)
+        child2.onResize(child_width, child_height)
       }
     }
     
@@ -72,13 +92,23 @@ class StackLayout extends EmptyWidget {
     this.height = height
     
     let child_height = this.height / this.children.length
+    let child_width = this.width / this.children.length
+
+    if (this.direction == "v") {
+      child_width = this.width
+    } else {
+      child_height = this.height
+    }
 
     for (let child of this.children) {
-      child.init(createContext(this.width, child_height), this.width, child_height)
+      child.init(
+        createContext(child_width, child_height),
+        child_width,
+        child_height
+      )
     }
 
     this.inited = true
-    console.log(this)
   }
   onResize(width, height) {
     this.width = width
@@ -87,20 +117,37 @@ class StackLayout extends EmptyWidget {
     this.ctx.canvas.height = height
 
     let child_height = this.height / this.children.length
+    let child_width = this.width / this.children.length
+
+    if (this.direction == "v") {
+      child_width = this.width
+    } else {
+      child_height = this.height
+    }
     
     for (let child of this.children) {
-      child.onResize(this.width, child_height)
+      child.onResize(child_width, child_height)
     }
 
     this.draw()
   }
   draw() {
-    let child_height = this.height / this.children.length
-    let child_y = 0
+    if (this.direction == "v") {
+      let child_height = this.height / this.children.length
+      let child_y = 0
     
-    for (let child of this.children) {
-      this.ctx.drawImage(child.draw().canvas, 0, child_y)
-      child_y += child_height
+      for (let child of this.children) {
+        this.ctx.drawImage(child.draw().canvas, 0, child_y)
+        child_y += child_height
+      }
+    } else {
+      let child_width = this.width / this.children.length
+      let child_x = 0
+  
+      for (let child of this.children) {
+        this.ctx.drawImage(child.draw().canvas, child_x, 0)
+        child_x += child_width
+      }
     }
     
     return this.ctx
