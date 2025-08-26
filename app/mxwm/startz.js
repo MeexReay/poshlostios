@@ -184,7 +184,7 @@ async function onMouseDown(ctx, button) {
 
     if (iter(getWindow(selected_window))) return
     
-    for (let window of listWindows()) {
+    for (let window of listWindows().toReversed()) {
         if (window.wid == selected_window) continue
         if (iter(window)) return
     }
