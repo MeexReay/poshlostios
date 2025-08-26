@@ -1,20 +1,26 @@
 [
-    {
-        "id": "zhelp",
-        "title": "help page",
-        "icon": "app/mxwm/zhelp.png",
-        "script": ["/app/zhelp.js"]
-    }, 
-    {
-        "id": "sexp",
-        "title": "sexp explorer",
-        "icon": "app/sexp/sexp.png",
-        "script": ["/app/sexp.js"]
-    }, 
-    {
-        "id": "zterm",
-        "title": "zterm - terminal emulator",
-        "icon": "app/zterm/zterm.png",
-        "script": ["/app/zterm.js"]
-    }
+  {
+    "id": "zhelp",
+    "title": "help page",
+    "icon": "app/mxwm/zhelp.png",
+    "script": [
+      "/app/zhelp.js"
+    ]
+  },
+  {
+    "id": "sexp",
+    "title": "sexp explorer",
+    "icon": "app/sexp/sexp.png",
+    "script": [
+      "/app/sexp.js"
+    ]
+  },
+  {
+    "id": "zterm",
+    "title": "zterm - terminal emulator",
+    "icon": "app/zterm/zterm.png",
+    "script": [
+      "/app/zterm.js"
+    ]
+  }
 ]
