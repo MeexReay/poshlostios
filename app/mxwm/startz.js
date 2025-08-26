@@ -72,12 +72,12 @@ let pressedKeys = []
 let pressedButtons = [false, false, false]
 
 function isPressed(key) {
-    return pressedKeys.indexOf(key) !== -1
+    return pressedKeys.indexOf(key.toUpperCase()) !== -1
 }
 
 async function onKeyDown(ctx, key) {
-    if (pressedKeys.indexOf(key) === -1) {
-        pressedKeys.push(key)
+    if (pressedKeys.indexOf(key.toUpperCase()) === -1) {
+        pressedKeys.push(key.toUpperCase())
     }
     
     if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Shift") && isPressed("Q")) {
@@ -95,21 +95,23 @@ async function onKeyDown(ctx, key) {
         return
     }
 
-    if ((isPressed("Alt") || isPressed("Meta")) && pressedKeys.indexOf("Enter") !== -1) {
+    if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Enter")) {
         executeCommand(["/app/zterm.js"], terminal)
         return
     }
 
-    if (selected_window != null) getWindow(selected_window).onkeydown(key)
+    let selected = getWindow(selected_window)
+    if (selected != null) selected.onkeydown(key)
 }
 
 async function onKeyUp(ctx, key) {
-    let index = pressedKeys.indexOf(key)
+    let index = pressedKeys.indexOf(key.toUpperCase())
     if (index !== -1) {
         pressedKeys.splice(index, 1)
     }
     
-    if (selected_window != null) getWindow(selected_window).onkeyup(key)
+    let selected = getWindow(selected_window)
+    if (selected != null) selected.onkeyup(key)
 }
 
 let dragging_window = null
