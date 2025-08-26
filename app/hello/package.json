@@ -1,7 +1,9 @@
 {
-    "name": "hello",
-    "version": "0.1.4",
-    "description": "Hello Message",
-    "author": "MeexReay",
-    "apps": [ "hello.js" ]
+  "name": "hello",
+  "version": "0.1.5",
+  "description": "Hello Message",
+  "author": "MeexReay",
+  "apps": [
+    "hello.js"
+  ]
 }

@@ -26,9 +26,7 @@ Github - https://github.com/MeexReay/poshlostios
 * ppm <i/s/r/u/A/a/l> [package] - пакетный менеджер
 * woman <article> - руководства по всякому
 * kfc <file> - редактор файлов в стиле vi
-
-Планируется:
-* xorg
+* startz - запустить zcom сервер
 `
 
 async function main(args) {

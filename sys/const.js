@@ -8,6 +8,11 @@ const DEFAULT_APPS = [
     "reset",
     "vget",
     "kfc",
-    "woman"
+    "woman",
+    
+    "mxwm", // mxwm-related
+    "poki",
+    "zterm",
+    "sexp"
 ]
-const STARTUP_COMMAND = [ "/app/posh.js" ]
+const STARTUP_COMMAND = [ "/app/posh.js", "/app/startz.js" ]
