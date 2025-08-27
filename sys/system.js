@@ -10,12 +10,18 @@ function executeCommand(
     while (io_module == null || fs_module == null) {}
     let id = new Date().getMilliseconds().toString()+(Math.random()*100)
     let func_content = readFile(args[0])
-    console.log("execute", func_content)
-    if (func_content == null || !func_content.includes("function main")) return
+    if (func_content == null) return
+    
+    let content = fs_module+"\n"+io_module+"\n"+func_content+"\nreturn main(args)"
+
+    content = content
+        .replace(/eval\(readFile\("([^"]+)"\)\)/g, (_, path) => readFile(path))
+        .replace(/import\s+"([^"]+)"/g, (_, path) => readFile(path));
+    
     let func = new Function(
         "args",
         "terminal",
-        fs_module+"\n"+io_module+"\n"+func_content+"\nreturn main(args)"
+        content
     )
     let process = {
         "id": id,
