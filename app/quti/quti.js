@@ -50,6 +50,71 @@ class ColorWidget extends EmptyWidget {
   }
 }
 
+class ButtonWidget extends EmptyWidget {
+  constructor(
+    background,
+    foreground,
+    pressed_background,
+    pressed_foreground,
+    border_width,
+    font,
+    text,
+    callback,
+  ) {
+    super()
+    this.ctx = null
+    this.background = background
+    this.foreground = foreground
+    this.pressed_background = pressed_background
+    this.pressed_foreground = pressed_foreground
+    this.border_width = border_width
+    this.text = text
+    this.callback = callback
+    this.pressed = false
+    this.font = font
+  }
+  init(ctx, width, height) {
+    this.ctx = ctx
+  }
+  onResize(width, height) {
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+  }
+  draw() {
+    if (this.pressed) this.ctx.fillStyle = this.pressed_background
+    else this.ctx.fillStyle = this.background
+    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.fill()
+    this.ctx.lineWidth = this.border_width
+    if (this.pressed) this.ctx.strokeStyle = this.pressed_foreground
+    else this.ctx.strokeStyle = this.foreground
+    this.ctx.rect(
+      this.border_width / 2,
+      this.border_width / 2,
+      this.ctx.canvas.width - this.border_width,
+      this.ctx.canvas.height - this.border_width
+    )
+    this.ctx.stroke()
+    this.ctx.textAlign = "center"
+    this.ctx.textBaseline = "middle"
+    if (this.pressed) this.ctx.fillStyle = this.pressed_foreground
+    else this.ctx.fillStyle = this.foreground
+    this.ctx.font = this.font
+    this.ctx.fillText(this.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2)
+    return this.ctx
+  }
+  onMouseMove(x, y) {
+    return "pointer"
+  }
+  onMouseDown(b) {
+    this.pressed = true
+  }
+  onMouseUp(b) {
+    this.callback(this)
+    this.pressed = false
+  }
+}
+
 class StackLayout extends EmptyWidget {
   constructor() {
     super()
@@ -159,9 +224,10 @@ class StackLayout extends EmptyWidget {
     return this.ctx
   }
   onMouseMove(x, y) {
-    console.log("move", x, y)
+    // console.log("move", x, y)
     let pos = 0
     let found = false
+    let res = null
     
     this.mapChilds((c, s) => {
       let [cx, cy] = this.posToPoses(pos)
@@ -169,8 +235,8 @@ class StackLayout extends EmptyWidget {
 
       if (x >= cx && y >= cy && x <= cx + cw && y <= cy + ch) {
         this.hover_child = c
-        console.log("hover", this.hover_child)
-        c.onMouseMove(x - cx, y - cy)
+        // console.log("hover", this.hover_child)
+        res = c.onMouseMove(x - cx, y - cy)
         found = true
       }
       
@@ -180,6 +246,8 @@ class StackLayout extends EmptyWidget {
     if (!found) {
       this.hover_child = null
     }
+
+    return res
   }
   onKeyDown(key) {
     if (this.hover_child != null) {
@@ -296,6 +364,7 @@ class ScrollableLayout extends StackLayout {
   onMouseMove(x, y) {
     let pos = -this.scroll_pos
     let found = false
+    let res = null
     
     for (let child of this.children) {
       let [cx, cy] = this.posToPoses(pos)
@@ -303,7 +372,7 @@ class ScrollableLayout extends StackLayout {
       
       if (x >= cx && y >= cy && x <= cx + cw && y <= cy + ch) {
         this.hover_child = child
-        child.onMouseMove(x - cx, y - cy)
+        res = child.onMouseMove(x - cx, y - cy)
         found = true
       }
       
@@ -313,6 +382,8 @@ class ScrollableLayout extends StackLayout {
     if (!found) {
       this.hover_child = null
     }
+
+    return res
   }
   onMouseWheel(y, x, z) {
     if (y > 0) {
@@ -436,13 +507,18 @@ class SpawnedQutiWindow {
 
 async function main(args) {
   let hlayout = new StackLayout()
-  hlayout.pushChild(new ColorWidget("#f00"), 1)
-  hlayout.pushChild(new ColorWidget("#0f0"), 0.5)
-  let vlayout = new ScrollableLayout(500).vertical()
-  vlayout.pushChild(new ColorWidget("#f00"), 500)
-  vlayout.pushChild(new ColorWidget("#0f0"), 450)
-  vlayout.pushChild(new ColorWidget("#00f"), 250)
-  hlayout.pushChild(vlayout, 1)
+  hlayout.pushChild(new ButtonWidget(
+    "#000",
+    "#fff",
+    "#fff",
+    "#000",
+    10,
+    "48px serif",
+    "hello world",
+    () => {
+      console.log("hello world")
+    }
+  ), 1)
   let window = QutiWindow.builder()
     .child(hlayout)
     .build()

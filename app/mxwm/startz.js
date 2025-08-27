@@ -251,7 +251,10 @@ async function onMouseMove(ctx, x, y) {
 
     for (let window of listWindows()) {
         if (isMouseInside(window)) {
-            window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
+            let res = window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
+            if (res != null) {
+                cursor = res
+            }
         }
         if (dragging_window == null && window.movable && isMouseOnHeader(window)) {
             cursor = "grab"
