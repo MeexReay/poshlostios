@@ -209,10 +209,21 @@ async function onMouseUp(ctx, button) {
     if (resizing_window != null) {
         resizing_window = null
     }
-    
-    for (let window of listWindows()) {
+
+    let iter = (window) => {
+        if (window == null) return false
         if (isMouseInside(window)) {
             window.onmouseup(button)
+            return true
+        }
+        return false
+    }
+
+    if (iter(getWindow(getSelected()))) return
+    for (let window of listWindows().toReversed()) {
+        if (window.wid == getSelected()) continue
+        if (iter(window)) {
+            return
         }
     }
 }
@@ -249,18 +260,32 @@ async function onMouseMove(ctx, x, y) {
     
     mouse_position = [x, y]
 
-    for (let window of listWindows()) {
+    let iter = (window) => {
+        if (window == null) return false
         if (isMouseInside(window)) {
             let res = window.onmousemove(mouse_position[0] - window.x, mouse_position[1] - window.y)
             if (res != null) {
                 cursor = res
             }
+            return true
         }
         if (dragging_window == null && window.movable && isMouseOnHeader(window)) {
             cursor = "grab"
+            return true
         }
         if (window.resizable && isMouseOnCorner(window)) {
             cursor = "nwse-resize"
+            return true
+        }
+        return false
+    }
+
+    if (!iter(getWindow(getSelected()))) {
+        for (let window of listWindows().toReversed()) {
+            if (window.wid == getSelected()) continue
+            if (iter(window)) {
+                break
+            }
         }
     }
 

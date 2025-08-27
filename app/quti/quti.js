@@ -12,7 +12,7 @@ function drawContext(src, dest, x , y) {
   try {
     dest.drawImage(src.canvas, x, y)
   } catch (e) {
-    console.log(e)
+    // console.log(e)
   }
 }
 
@@ -260,6 +260,7 @@ class StackLayout extends EmptyWidget {
       return child.wanted_actual_size
     }
     let total_size = this.getTotalWantedSize()
+    if (total_size == 0) return this.primarySizeNoActuals()
     return child.wanted_size / total_size * this.primarySizeNoActuals()
   }
   mapChilds(callback) {
@@ -309,12 +310,20 @@ class StackLayout extends EmptyWidget {
     if (this.inited) {
       let size = this.getActualSize(child)
       let [child_width, child_height] = this.sizeToSizes(size)
+
+      console.log(child_width, child_height)
       
       child.init(
         createContext(child_width, child_height),
         child_width,
         child_height
       )
+      
+      this.mapChilds((c, s) => {
+        let [child_width, child_height] = this.sizeToSizes(s)
+      
+        c.onResize(child_width, child_height)
+      })
     }
     
     this.children.push(child)
@@ -481,9 +490,9 @@ class ScrollableLayout extends StackLayout {
     }
 
     this.scroll_pos = Math.min(total_size - this.primarySize(), Math.max(0, this.scroll_pos + this.velocity))
-    // this.velocity /= 1.5
+    this.velocity /= 1.5
     // this.velocity = Math.round(this.velocity * 100) / 100
-    this.velocity = 0
+    // this.velocity = 0
 
     // if (0 < this.velocity < 0.1) this.velocity = 0
     // if (-0.1 < this.velocity < 0) this.velocity = 0
@@ -491,6 +500,8 @@ class ScrollableLayout extends StackLayout {
     if (total_size < this.primarySize()) {
       this.scroll_pos = 0
     }
+
+    console.log(this.scroll_pos, total_size, this.primarySize())
       
     let pos = -this.scroll_pos
     
