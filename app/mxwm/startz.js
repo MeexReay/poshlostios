@@ -2,8 +2,16 @@ eval(readFile("/app/zcom.js"))
 
 const headerHeight = 24;
 
+let background = new Image()
+
 async function drawScreen(ctx) {
-    ctx.fillStyle = config.background
+    if (config.background.includes(":")) {
+        background.src = config.background
+        var pattern = ctx.createPattern(background, "repeat");
+        ctx.fillStyle = pattern
+    } else {
+        ctx.fillStyle = config.background
+    }
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     
     for (const win of window.mxwm_windows) {
