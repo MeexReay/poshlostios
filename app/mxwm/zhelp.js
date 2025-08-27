@@ -31,8 +31,10 @@ function draw(ctx) {
 
 async function main(args) {
     let [wid, ctx] = createWindow({ 
-        "title": "help page",
+        "title": "помргите!!",
         "app_id": "zhelp",
+        "x": 5,
+        "y": graphics_canvas.height - 70 - 184,
         "width": 420,
         "height": 184,
         "onresize": () => {
@@ -46,7 +48,7 @@ async function main(args) {
 
     draw(ctx)
 
-    while (run && graphics_canvas != null) {
+    while (run && graphics_canvas != null && getSelected() == wid) {
         await new Promise(resolve => setTimeout(resolve, 100))
         draw(ctx)
     }

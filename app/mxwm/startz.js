@@ -191,6 +191,8 @@ async function onMouseDown(ctx, button) {
         if (window.wid == getSelected()) continue
         if (iter(window)) return
     }
+
+    setSelected(null)
 }
 
 async function onMouseUp(ctx, button) {
