@@ -215,8 +215,14 @@ async function main(args) {
 
     updateTerminal()
 
+    let command = ["/app/posh.js"]
+
+    if (args.length > 1) {
+        command = args.slice(1)
+    }
+    
     executeCommand(
-        ["/app/posh.js"],
+        command,
         destterm
     ).promise.then(() => {
         run = false
