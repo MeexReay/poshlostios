@@ -4,6 +4,7 @@
   "description": "Qute User Temmie Interfaces",
   "author": "MeexReay",
   "apps": [
-    "quti.js"
+    "quti.js",
+    "quti-example.js"
   ]
 }

@@ -10,6 +10,7 @@ function executeCommand(
     while (io_module == null || fs_module == null) {}
     let id = new Date().getMilliseconds().toString()+(Math.random()*100)
     let func_content = readFile(args[0])
+    console.log("execute", func_content)
     if (func_content == null || !func_content.includes("function main")) return
     let func = new Function(
         "args",
