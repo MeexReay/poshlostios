@@ -128,6 +128,10 @@ class EntryWidget extends EmptyWidget {
     font,
     text,
     callback,
+    align="center",
+    baseline="middle",
+    x=0.5,
+    y=0.5
   ) {
     super()
     this.ctx = null
@@ -139,6 +143,10 @@ class EntryWidget extends EmptyWidget {
     this.callback = callback
     this.pressed = false
     this.font = font
+    this.align = align
+    this.baseline = baseline
+    this.x = x
+    this.y = y
   }
   init(ctx, width, height) {
     this.ctx = ctx
@@ -162,11 +170,11 @@ class EntryWidget extends EmptyWidget {
     )
     this.ctx.stroke()
     
-    this.ctx.textAlign = "center"
-    this.ctx.textBaseline = "middle"
+    this.ctx.textAlign = this.align
+    this.ctx.textBaseline = this.baseline
     this.ctx.fillStyle = this.foreground
     this.ctx.font = this.font
-    this.ctx.fillText(this.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2)
+    this.ctx.fillText(this.text, this.ctx.canvas.width * this.x, this.ctx.canvas.height * this.y)
     
     return this.ctx
   }
@@ -188,6 +196,10 @@ class LabelWidget extends EmptyWidget {
     foreground,
     font,
     text,
+    align="center",
+    baseline="middle",
+    x=0.5,
+    y=0.5
   ) {
     super()
     this.ctx = null
@@ -195,6 +207,10 @@ class LabelWidget extends EmptyWidget {
     this.foreground = foreground
     this.text = text
     this.font = font
+    this.align = align
+    this.baseline = baseline
+    this.x = x
+    this.y = y
   }
   init(ctx, width, height) {
     this.ctx = ctx
@@ -207,11 +223,11 @@ class LabelWidget extends EmptyWidget {
     this.ctx.fillStyle = this.background
     this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     this.ctx.fill()
-    this.ctx.textAlign = "center"
-    this.ctx.textBaseline = "middle"
+    this.ctx.textAlign = this.align
+    this.ctx.textBaseline = this.baseline
     this.ctx.fillStyle = this.foreground
     this.ctx.font = this.font
-    this.ctx.fillText(this.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2)
+    this.ctx.fillText(this.text, this.ctx.canvas.width * this.x, this.ctx.canvas.height * this.y)
     return this.ctx
   }
 }
@@ -240,13 +256,30 @@ class StackLayout extends EmptyWidget {
     return total_size
   }
   getActualSize(child) {
+    if (child.wanted_actual_size != null) {
+      return child.wanted_actual_size
+    }
     let total_size = this.getTotalWantedSize()
-    return child.wanted_size / total_size * this.primarySize()
+    return child.wanted_size / total_size * this.primarySizeNoActuals()
   }
   mapChilds(callback) {
     let total_size = this.getTotalWantedSize()
-    for (let child of this.children)
-      callback(child, child.wanted_size / total_size * this.primarySize())
+    for (let child of this.children) {
+      if (child.wanted_actual_size != null) {
+        callback(child, child.wanted_actual_size)
+      } else {
+        callback(child, child.wanted_size / total_size * this.primarySizeNoActuals())
+      }
+    }
+  }
+  primarySizeNoActuals() {
+    let size = this.primarySize()
+    for (let child of this.children) {
+      if (child.wanted_actual_size != null) {
+        size -= child.wanted_actual_size
+      }
+    }
+    return size
   }
   primarySize() {
     if (this.direction == "v")
@@ -263,8 +296,15 @@ class StackLayout extends EmptyWidget {
       return [0, size]
     return [size, 0]
   }
-  pushChild(child, wanted_size=1) {
-    child.wanted_size = wanted_size
+  pushChild(child, wanted_size=1, wanted_actual_size=null) {
+    console.log("push child", child)
+    if (wanted_actual_size != null) {
+      child.wanted_actual_size = wanted_actual_size
+      child.wanted_size = 0
+    } else {
+      child.wanted_actual_size = null
+      child.wanted_size = wanted_size
+    }
     
     if (this.inited) {
       let size = this.getActualSize(child)

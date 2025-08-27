@@ -1,28 +1,50 @@
-eval(readFile("/app/zcom.js"))
-
-async function draw(ctx) {
-    ctx.fillStyle = "darkgray";
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-}
+eval(readFile("/app/quti.js"))
 
 async function main(args) {
-    let wid, ctx
+  let output = new LabelWidget(
+    "#000",
+    "#fff",
+    "22px monospace",
+    "output here",
+    "left",
+    "middle",
+    0,
+    0.5
+  )
 
-    [wid, ctx] = createWindow({ 
-        "title": "sexp",
-        "width": 500,
-        "height": 500,
-        "onresize": () => draw(ctx)
-    })
+  let input = new EntryWidget(
+    "gray",
+    "white",
+    "darkgray",
+    2,
+    "18px monospace",
+    "input here",
+    (t) => {
+      output.text = t.text
+    },
+    "left",
+    "middle",
+    0,
+    0.5
+  )
 
-    draw(ctx)
+  let files = new ScrollableLayout().vertical()
+  files.pushChild(output, 50)
+  
+  let vlayout = new StackLayout().vertical()
+  vlayout.pushChild(input, null, 30)
+  vlayout.pushChild(files, 1)
 
-    while (graphics_canvas != null) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-        draw(ctx)
-    }
+  let window = QutiWindow.builder()
+    .child(vlayout)
+    .width(500)
+    .height(100)
+    .title("sexp - files exploring")
+    .app_id("sexp")
+    .build()
+  
+  let spawned = window.spawn()
+  await spawned.mainloop()
 
-    closeWindow(wid)
-    
-    return 0
+  return 0
 }
