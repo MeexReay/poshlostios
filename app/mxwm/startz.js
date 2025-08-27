@@ -94,6 +94,13 @@ async function onKeyDown(ctx, key) {
         isPressed("C")) {
         signalWindow(getSelected(), 9)
         closeWindow(getSelected())
+        let list_windows = listWindows()
+        if (list_windows.length > 0) {
+            let last_window = list_windows[list_windows.length - 1]
+            if (last_window.selectable) {
+                setSelected(last_window.wid)
+            }
+        }
         return
     }
 
