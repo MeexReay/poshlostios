@@ -44,8 +44,8 @@ class ColorWidget extends EmptyWidget {
   }
   draw() {
     this.ctx.fillStyle = this.color
-    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    this.ctx.fill();
+    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.fill()
     return this.ctx
   }
 }
@@ -57,6 +57,7 @@ class StackLayout extends EmptyWidget {
     this.inited = false
     this.ctx = null
     this.direction = "h"
+    this.hover_child = null
   }
   horizontal() {
     this.direction = "h"
@@ -121,7 +122,6 @@ class StackLayout extends EmptyWidget {
     this.height = height
 
     this.mapChilds((c, s) => {
-      console.log(c, s)
       let [child_width, child_height] = this.sizeToSizes(s)
 
       c.init(
@@ -131,7 +131,7 @@ class StackLayout extends EmptyWidget {
       )
     })
 
-   this.inited = true
+    this.inited = true
   }
   onResize(width, height) {
     this.width = width
@@ -157,6 +157,169 @@ class StackLayout extends EmptyWidget {
     })
     
     return this.ctx
+  }
+  onMouseMove(x, y) {
+    console.log("move", x, y)
+    let pos = 0
+    let found = false
+    
+    this.mapChilds((c, s) => {
+      let [cx, cy] = this.posToPoses(pos)
+      let [cw, ch] = this.sizeToSizes(s)
+
+      if (x >= cx && y >= cy && x <= cx + cw && y <= cy + ch) {
+        this.hover_child = c
+        console.log("hover", this.hover_child)
+        c.onMouseMove(x - cx, y - cy)
+        found = true
+      }
+      
+      pos += s
+    })
+
+    if (!found) {
+      this.hover_child = null
+    }
+  }
+  onKeyDown(key) {
+    if (this.hover_child != null) {
+      this.hover_child.onKeyDown(key)
+    }
+  }
+  onKeyUp(key) {
+    if (this.hover_child != null) {
+      this.hover_child.onKeyUp(key)
+    }
+  }
+  onMouseDown(button) {
+    if (this.hover_child != null) {
+      this.hover_child.onMouseDown(button)
+    }
+  }
+  onMouseUp(button) {
+    if (this.hover_child != null) {
+      this.hover_child.onMouseUp(button)
+    }
+  }
+  onMouseWheel(y, x, z) {
+    if (this.hover_child != null) {
+      this.hover_child.onMouseWheel(y, x, z)
+    }
+  }
+}
+
+class ScrollableLayout extends StackLayout {
+  constructor(step) {
+    super()
+    this.scroll_pos = 0
+    this.step = step
+    this.velocity = 0
+  }
+  pushChild(child, wanted_actual_size) {
+    child.wanted_actual_size = wanted_actual_size
+    
+    if (this.inited) {
+      let [child_width, child_height] = this.sizeToSizes(wanted_actual_size)
+      
+      child.init(
+        createContext(child_width, child_height),
+        child_width,
+        child_height
+      )
+    }
+    
+    this.children.push(child)
+  }
+  init(ctx, width, height) {
+    this.ctx = ctx
+    this.width = width
+    this.height = height
+
+    for (let child of this.children) {
+      let [child_width, child_height] = this.sizeToSizes(child.wanted_actual_size)
+
+      child.init(
+        createContext(child_width, child_height),
+        child_width,
+        child_height
+      )
+    }
+
+    this.inited = true
+  }
+  onResize(width, height) {
+    this.width = width
+    this.height = height
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+    
+    for (let child of this.children) {
+      let [child_width, child_height] = this.sizeToSizes(child.wanted_actual_size)
+      child.onResize(child_width, child_height)
+    }
+    
+    this.draw()
+  }
+  draw() {
+    this.ctx.fillStyle = "#000"
+    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.fill()
+
+    let total_size = 0
+    
+    for (let child of this.children) {
+      total_size += child.wanted_actual_size
+    }
+
+    this.scroll_pos = Math.min(total_size - this.primarySize(), Math.max(0, this.scroll_pos + this.velocity))
+    // this.velocity /= 1.5
+    // this.velocity = Math.round(this.velocity * 100) / 100
+    this.velocity = 0
+
+    // if (0 < this.velocity < 0.1) this.velocity = 0
+    // if (-0.1 < this.velocity < 0) this.velocity = 0
+
+    if (total_size < this.primarySize()) {
+      this.scroll_pos = 0
+    }
+      
+    let pos = -this.scroll_pos
+    
+    for (let child of this.children) {
+      let [x, y] = this.posToPoses(pos)
+      drawContext(child.draw(), this.ctx, x, y)
+      pos += child.wanted_actual_size
+    }
+    
+    return this.ctx
+  }
+  onMouseMove(x, y) {
+    let pos = -this.scroll_pos
+    let found = false
+    
+    for (let child of this.children) {
+      let [cx, cy] = this.posToPoses(pos)
+      let [cw, ch] = this.sizeToSizes(child.wanted_actual_size)
+      
+      if (x >= cx && y >= cy && x <= cx + cw && y <= cy + ch) {
+        this.hover_child = child
+        child.onMouseMove(x - cx, y - cy)
+        found = true
+      }
+      
+      pos += child.wanted_actual_size
+    }
+    
+    if (!found) {
+      this.hover_child = null
+    }
+  }
+  onMouseWheel(y, x, z) {
+    if (y > 0) {
+      this.velocity += this.step
+    } else {
+      this.velocity -= this.step
+    }
   }
 }
 
@@ -224,6 +387,7 @@ class QutiWindow {
       "onmouseup": o => this.child.onMouseUp(o),
       "onmousedown": o => this.child.onMouseDown(o),
       "onmousewheel": (x,y,z) => this.child.onMouseWheel(x,y,z),
+      "onmousemove": (x,y) => this.child.onMouseMove(x,y),
       "onkeydown": o => this.child.onKeyDown(o),
       "onkeyup": o => this.child.onKeyUp(o),
       "onresize": (w,h) => this.child.onResize(w,h),
@@ -274,10 +438,10 @@ async function main(args) {
   let hlayout = new StackLayout()
   hlayout.pushChild(new ColorWidget("#f00"), 1)
   hlayout.pushChild(new ColorWidget("#0f0"), 0.5)
-  let vlayout = new StackLayout().vertical()
-  vlayout.pushChild(new ColorWidget("#f00"), 1)
-  vlayout.pushChild(new ColorWidget("#0f0"), 0.5)
-  vlayout.pushChild(new ColorWidget("#00f"), 0.25)
+  let vlayout = new ScrollableLayout(500).vertical()
+  vlayout.pushChild(new ColorWidget("#f00"), 500)
+  vlayout.pushChild(new ColorWidget("#0f0"), 450)
+  vlayout.pushChild(new ColorWidget("#00f"), 250)
   hlayout.pushChild(vlayout, 1)
   let window = QutiWindow.builder()
     .child(hlayout)

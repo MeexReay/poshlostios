@@ -91,7 +91,6 @@ function moveWindow(wid, x, y, w, h) {
       win.y = y
       let rw = Math.min(Math.max(w, win.min_width), win.max_width)
       let rh = Math.min(Math.max(h, win.min_height), win.max_height)
-      console.log(rw, rh, win)
       win.width = rw
       win.height = rh
       win.canvas.width = rw
