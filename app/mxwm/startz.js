@@ -6,12 +6,6 @@ async function drawScreen(ctx) {
     ctx.fillStyle = config.background
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     
-    // ctx.fillStyle = "cyan";
-    // ctx.font = "bold 14px comic-sans";
-    // ctx.textBaseline = "middle";
-    // ctx.textAlign = "left";
-    // ctx.fillText(`Alt+Shift+Q - выключить оконный менеджер | Alt+Enter - включить zterm | Alt+Shift+C - закрыть окно`, 10, 16);
-
     for (const win of window.mxwm_windows) {
         if (win.decorated) {
             drawWindowDecorations(
@@ -84,6 +78,13 @@ async function onKeyDown(ctx, key) {
     
     if ((isPressed("Alt") || isPressed("Meta")) && isPressed("Shift") && isPressed("Q")) {
         disableGraphics()
+        return
+    }
+    
+    if ((isPressed("Alt") || isPressed("Meta"))
+        && isPressed("Shift") && isPressed("R")) {
+        disableGraphics()
+        restarting = true
         return
     }
     
@@ -321,6 +322,7 @@ async function onMouseWheel(ctx, x, y, z) {
 }
 
 let config = null
+let restarting = false
 
 async function main(args) {
     let ctx = null
@@ -359,6 +361,10 @@ async function main(args) {
 
     while (graphics_canvas != null) {
         await new Promise(res => setTimeout(res, 1000))
+    }
+
+    if (restarting) {
+        await executeCommand(["/app/startz.js"], terminal)
     }
     
     return 0

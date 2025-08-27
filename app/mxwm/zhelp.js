@@ -2,14 +2,17 @@ eval(readFile("/app/zcom.js"))
 
 const HELP_MESSAGE = `Помощь по MXWM:
 
-Выключить оконный менеджер - Alt+Shift+Q
-Создать новое окно ZTERM - Alt+Enter
+Создать новое окно терминала - Alt+Enter
 Закрыть окно - Alt+Shift+C
 Переместить окно - Зажмите мышкой на заголовке окна 
 ИЛИ Нажмите Alt и зажмите левой кнопки мышки на окне
 Изменить размер окна - Зажмите мышкой на 
 правом нижнем углу окна 
-ИЛИ Нажмите Alt и зажмите правой кнопки мышки на окне`
+ИЛИ Нажмите Alt и зажмите правой кнопки мышки на окне
+
+Отредачить настройки в /config/mxwm.json
+Перезапустить оконный менеджер - Alt+Shift+R
+Выключить оконный менеджер - Alt+Shift+Q`
 
 let run = true
 
@@ -34,9 +37,9 @@ async function main(args) {
         "title": "помргите!!",
         "app_id": "zhelp",
         "x": 5,
-        "y": graphics_canvas.height - 70 - 184,
+        "y": graphics_canvas.height - 70 - 237,
         "width": 420,
-        "height": 184,
+        "height": 237,
         "onresize": () => {
             draw(ctx)
         },
