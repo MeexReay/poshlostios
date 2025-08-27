@@ -62,10 +62,10 @@ if (Object.keys(fs_mapping).length == 0) {
     resetSystem()
 }
     
-fetch("/sys/io.js")
+fetch("sys/io.js")
     .then(i => i.text())
     .then(i => io_module = i)
-    .then(_ => fetch("/sys/fs.js"))
+    .then(_ => fetch("sys/fs.js"))
     .then(i => i.text())
     .then(i => fs_module = i)
     .then(_ => executeCommand(STARTUP_COMMAND, terminal))
