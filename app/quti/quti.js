@@ -115,6 +115,101 @@ class ButtonWidget extends EmptyWidget {
   }
 }
 
+class EntryWidget extends EmptyWidget {
+  constructor(
+    background,
+    foreground,
+    border_width,
+    font,
+    text,
+    callback,
+  ) {
+    super()
+    this.ctx = null
+    this.background = background
+    this.foreground = foreground
+    this.border_width = border_width
+    this.text = text
+    this.callback = callback
+    this.pressed = false
+    this.font = font
+  }
+  init(ctx, width, height) {
+    this.ctx = ctx
+  }
+  onResize(width, height) {
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+  }
+  draw() {
+    this.ctx.fillStyle = this.background
+    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.fill()
+    this.ctx.lineWidth = this.border_width
+    
+    this.ctx.strokeStyle = this.foreground
+    this.ctx.rect(
+      this.border_width / 2,
+      this.border_width / 2,
+      this.ctx.canvas.width - this.border_width,
+      this.ctx.canvas.height - this.border_width
+    )
+    this.ctx.stroke()
+    
+    this.ctx.textAlign = "center"
+    this.ctx.textBaseline = "middle"
+    this.ctx.fillStyle = this.foreground
+    this.ctx.font = this.font
+    this.ctx.fillText(this.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2)
+    
+    return this.ctx
+  }
+  onKeyDown(key) {
+    if (key.length == 1) {
+      this.text += key
+    } else if (key == "Backspace") {
+      if (this.text.length != 0)
+        this.text = this.text.substring(0, this.text.length - 1)
+    } else if (key == "Enter") {
+      this.callback(this)
+    }
+  }
+}
+
+class LabelWidget extends EmptyWidget {
+  constructor(
+    background,
+    foreground,
+    font,
+    text,
+  ) {
+    super()
+    this.ctx = null
+    this.background = background
+    this.foreground = foreground
+    this.text = text
+    this.font = font
+  }
+  init(ctx, width, height) {
+    this.ctx = ctx
+  }
+  onResize(width, height) {
+    this.ctx.canvas.width = width
+    this.ctx.canvas.height = height
+  }
+  draw() {
+    this.ctx.fillStyle = this.background
+    this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.ctx.fill()
+    this.ctx.textAlign = "center"
+    this.ctx.textBaseline = "middle"
+    this.ctx.fillStyle = this.foreground
+    this.ctx.font = this.font
+    this.ctx.fillText(this.text, this.ctx.canvas.width / 2, this.ctx.canvas.height / 2)
+    return this.ctx
+  }
+}
+
 class StackLayout extends EmptyWidget {
   constructor() {
     super()
@@ -506,23 +601,54 @@ class SpawnedQutiWindow {
 }
 
 async function main(args) {
-  let hlayout = new StackLayout()
-  hlayout.pushChild(new ButtonWidget(
+
+  let output = new LabelWidget(
     "#000",
     "#fff",
-    "#fff",
+    "22px monospace",
+    "output here",
+  )
+  
+  let input = new EntryWidget(
     "#000",
-    10,
-    "48px serif",
-    "hello world",
-    () => {
-      console.log("hello world")
+    "#fff",
+    5,
+    "22px monospace",
+    "input here",
+    (t) => {
+      output.text = t.text
     }
-  ), 1)
+  )
+
+  let submit = new ButtonWidget(
+    "#000",
+    "#fff",
+    "#fff",
+    "#000",
+    5,
+    "22px monospace",
+    "submit",
+    () => {
+      output.text = input.text
+    }
+  )
+  
+  let vlayout = new StackLayout().vertical()
+  let hlayout = new StackLayout().horizontal()
+  hlayout.pushChild(input, 2)
+  hlayout.pushChild(submit, 1)
+  vlayout.pushChild(hlayout, 1)
+  vlayout.pushChild(output, 1)
+
   let window = QutiWindow.builder()
-    .child(hlayout)
+    .child(vlayout)
+    .width(500)
+    .height(100)
+    .title("wow dialog window submit output input!!")
     .build()
+    
   let spawned = window.spawn()
   await spawned.mainloop()
+  
   return 0
 }
