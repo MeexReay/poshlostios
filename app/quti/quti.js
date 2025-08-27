@@ -54,8 +54,10 @@ class ButtonWidget extends EmptyWidget {
   constructor(
     background,
     foreground,
+    border_color,
     pressed_background,
     pressed_foreground,
+    pressed_border_color,
     border_width,
     font,
     text,
@@ -65,8 +67,10 @@ class ButtonWidget extends EmptyWidget {
     this.ctx = null
     this.background = background
     this.foreground = foreground
+    this.border_color = border_color
     this.pressed_background = pressed_background
     this.pressed_foreground = pressed_foreground
+    this.pressed_border_color = pressed_border_color
     this.border_width = border_width
     this.text = text
     this.callback = callback
@@ -86,8 +90,8 @@ class ButtonWidget extends EmptyWidget {
     this.ctx.rect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
     this.ctx.fill()
     this.ctx.lineWidth = this.border_width
-    if (this.pressed) this.ctx.strokeStyle = this.pressed_foreground
-    else this.ctx.strokeStyle = this.foreground
+    if (this.pressed) this.ctx.strokeStyle = this.pressed_border_color
+    else this.ctx.strokeStyle = this.border_color
     this.ctx.rect(
       this.border_width / 2,
       this.border_width / 2,
@@ -119,6 +123,7 @@ class EntryWidget extends EmptyWidget {
   constructor(
     background,
     foreground,
+    border_color,
     border_width,
     font,
     text,
@@ -129,6 +134,7 @@ class EntryWidget extends EmptyWidget {
     this.background = background
     this.foreground = foreground
     this.border_width = border_width
+    this.border_color = border_color
     this.text = text
     this.callback = callback
     this.pressed = false
@@ -147,7 +153,7 @@ class EntryWidget extends EmptyWidget {
     this.ctx.fill()
     this.ctx.lineWidth = this.border_width
     
-    this.ctx.strokeStyle = this.foreground
+    this.ctx.strokeStyle = this.border_color
     this.ctx.rect(
       this.border_width / 2,
       this.border_width / 2,
@@ -612,6 +618,7 @@ async function main(args) {
   let input = new EntryWidget(
     "#000",
     "#fff",
+    "#fff",
     5,
     "22px monospace",
     "input here",
@@ -624,6 +631,8 @@ async function main(args) {
     "#000",
     "#fff",
     "#fff",
+    "#fff",
+    "#000",
     "#000",
     5,
     "22px monospace",
