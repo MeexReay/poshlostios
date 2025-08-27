@@ -33,14 +33,14 @@ function editLine(content, line, callback) {
     return lines.join("\n")
 }
 
-function axisToIndex(lines, pos) {
+function axisToIndex(lines, pos, camera) {
     let index = 0
     for (let y = 0; y < lines.length; y++) {
         const line = lines[y];
         const length = line.length
 
-        if (y == pos[1]) {
-            return index + pos[0]
+        if (y == pos[1] + camera[1]) {
+            return index + pos[0] + camera[0]
         }
 
         index += length + 1
@@ -67,8 +67,8 @@ async function main(args) {
 
     let start_cursor = getCursor()
     let [width, height] = terminal.size
+    height -= 1
     let [screen_length, status_length] = await printScreen(0, start_cursor, pos, content, mode, pos, camera, width, height)
-
 
     setStdinFlag(ENABLE_STDIN)
     setStdinFlag(SILENT_STDIN)
@@ -83,31 +83,31 @@ async function main(args) {
                 if (pos[0] == 0 && pos[1] == 0) {
                     continue
                 }
-                let index = axisToIndex(content.split("\n"), pos)
+                let index = axisToIndex(content.split("\n"), pos, camera)
                 content = content.slice(0, index - 1) + content.slice(index)
                 if (pos[0] > 0) {
                     pos[0]--
                 } else {
                     if (pos[1] > 0) {
                         pos[1]--
-                        pos[0] = content.split("\n")[pos[1]].length
+                        pos[0] = content.split("\n")[pos[1] + camera[1]].length
                     }
                 }
             } else if (event.key == "Delete") {
-                let index = axisToIndex(content.split("\n"), pos)
+                let index = axisToIndex(content.split("\n"), pos, camera)
                 content = content.slice(0, index) + content.slice(index + 1)
             } else if (event.key == "ArrowUp") {
                 if (pos[1] == 0 && camera[1] > 0) camera[1]--
                 pos[1] = Math.max(0, pos[1] - 1)
-                pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0])
+                pos[0] = Math.min(content.split("\n")[pos[1] + camera[1]].length, pos[0])
             } else if (event.key == "ArrowDown") {
-                if (pos[1] == content.split("\n").length-1) camera[1]++
-                pos[1] = Math.min(content.split("\n").length-1, pos[1] + 1)
-                pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0])
+                if (pos[1] == height - 2 && pos[1] < content.split("\n").length - camera[1]) camera[1]++
+                pos[1] = Math.min(content.split("\n").length - camera[1], height - 2, pos[1] + 1)
+                pos[0] = Math.min(content.split("\n").length > pos[1] + camera[1] ? content.split("\n")[pos[1] + camera[1]].length : 0, pos[0])
             } else if (event.key == "ArrowLeft") {
                 pos[0] = Math.max(0, pos[0] - 1)
             } else if (event.key == "ArrowRight") {
-                pos[0] = Math.min(content.split("\n")[pos[1]].length, pos[0] + 1)
+                pos[0] = Math.min(content.split("\n").length > pos[1] + camera[1] ? content.split("\n")[pos[1] + camera[1]].length : 0, pos[0] + 1)
             } else if (event.key == "Escape") {
                 mode = "normal"
             } else if (event.key == "Insert") {
@@ -145,10 +145,13 @@ async function main(args) {
                     mode = "insert"
                 }
             } else if (mode == "insert") {
-                content = editLine(content, pos[1], line => line.slice(0, pos[0]) + event.char + line.slice(pos[0]))
+                if (content.split("\n").length == pos[1] + camera[1]) {
+                    content += "\n"
+                }
+                content = editLine(content, pos[1] + camera[1], line => line.slice(0, pos[0] + camera[0]) + event.char + line.slice(pos[0] + camera[0]))
                 if (event.char == "\n") {
-                    pos[1] += 1
                     pos[0] = 0
+                    camera[1] += 1
                 } else {
                     pos[0] += 1
                 }
