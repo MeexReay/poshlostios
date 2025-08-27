@@ -21,7 +21,7 @@ async function printScreen(screen_length, start_cursor, pos, content, mode, pos,
     terminal.text = terminal.text.substring(0, terminal.text.length - screen_length)
     let screen = makeColorCodesPrintable(await cropToScreen(content, camera[0], camera[1], width, height - 1))
     await writeStdout(screen)
-    let status_line = `\nmode: ${mode} | size: ${content.length} | lines: ${content.split("\n").length} | x: ${pos[0]} | y: ${pos[1]}`
+    let status_line = `\nmode: ${mode} | size: ${content.length} | lines: ${content.split("\n").length} | x: ${camera[0]+pos[0]} | y: ${camera[1]+pos[1]}`
     await writeStdout(status_line)
     setCursor(start_cursor[0] + pos[0], start_cursor[1] + pos[1])
     return [screen.length + status_line.length, status_line.length - 1]
@@ -65,13 +65,13 @@ async function main(args) {
     let pos = [0, 0]
     let camera = [0, 0]
 
+    setStdinFlag(ENABLE_STDIN)
+    setStdinFlag(SILENT_STDIN)
+    
     let start_cursor = getCursor()
     let [width, height] = terminal.size
     height -= 1
     let [screen_length, status_length] = await printScreen(0, start_cursor, pos, content, mode, pos, camera, width, height)
-
-    setStdinFlag(ENABLE_STDIN)
-    setStdinFlag(SILENT_STDIN)
 
     while (true) {
         let event = await pollStdinEvent()
@@ -143,6 +143,12 @@ async function main(args) {
                     }
                 } else if (event.char == "i") {
                     mode = "insert"
+                } else if (event.char == "D") {
+                    content = content.split("\n").slice(0, pos[1] + camera[1]).join("\n") + "\n" +
+                        content.split("\n").slice(pos[1] + camera[1] + 1).join("\n")
+                } else if (event.char == "d") {
+                    let index = axisToIndex(content.split("\n"), pos, camera)
+                    content = content.slice(0, index) + content.slice(index + 1)
                 }
             } else if (mode == "insert") {
                 if (content.split("\n").length == pos[1] + camera[1]) {
