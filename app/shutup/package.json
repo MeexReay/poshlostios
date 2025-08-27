@@ -1,0 +1,10 @@
+{
+  "name": "shutup",
+  "version": "0.1.0",
+  "description": "shutuppper",
+  "author": "MeexReay",
+  "apps": [
+    "shutup.js",
+    "recook.js"
+  ]
+}

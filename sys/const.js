@@ -9,6 +9,7 @@ const DEFAULT_APPS = [
     "vget",
     "kfc",
     "woman",
+    "shutup",
     
     "mxwm", // mxwm-related
     "poki",
