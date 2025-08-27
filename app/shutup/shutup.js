@@ -1,3 +1,4 @@
 async function main(args) {
-  window.close()
+  console.log("shutup!!! shutup!!! shutup!!!")
+  return 0
 }
