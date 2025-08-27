@@ -13,6 +13,7 @@ const DEFAULT_APPS = [
     "mxwm", // mxwm-related
     "poki",
     "zterm",
+    "quti",
     "sexp"
 ]
 const STARTUP_COMMAND = [ "/app/posh.js", "/app/startz.js" ]
