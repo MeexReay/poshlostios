@@ -7,6 +7,10 @@ function executeCommand(
     args,
     term
 ) {
+    if (args[0].endswith(".sh") || args[0].endswith(".posh")) {
+        return executeCommand(["/app/posh.js"].concat(args), term)
+    }
+    
     while (io_module == null || fs_module == null) {}
     let id = new Date().getMilliseconds().toString()+(Math.random()*100)
     let func_content = readFile(args[0])
