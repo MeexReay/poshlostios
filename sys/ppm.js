@@ -75,7 +75,7 @@ async function installPackage(url) {
     if ("fixup" in package) {
         for (const line of package.fixup) {
             let words = line.split(" ")
-            await processCommand(words[0], words.slice(1))
+            await executeCommand(words).promise
         }
     }
 
@@ -92,7 +92,7 @@ async function removePackage(name) {
     if ("fixdown" in package) {
         for (const line of package.fixdown) {
             let words = line.split(" ")
-            await processCommand(words[0], words.slice(1))
+            await executeCommand(words, terminal).promise
         }
     }
 
@@ -121,7 +121,7 @@ async function updatePackage(name, url) {
     if ("fixdown" in package) {
         for (const line of package.fixdown) {
             let words = line.split(" ")
-            await processCommand(words[0], words.slice(1))
+            await executeCommand(words, terminal).promise
         }
     }
 
@@ -154,7 +154,7 @@ async function updatePackage(name, url) {
     if ("fixup" in package) {
         for (const line of package.fixup) {
             let words = line.split(" ")
-            await processCommand(words[0], words.slice(1))
+            await executeCommand(words, terminal).promise
         }
     }
     
