@@ -88,6 +88,13 @@ async function removePackage(name) {
     let package = await getInstalledPackage(name)
 
     if (package == null) return false
+    
+    if ("fixdown" in package) {
+        for (const line of package.fixdown) {
+            let words = line.split(" ")
+            await processCommand(words[0], words.slice(1))
+        }
+    }
 
     if ("apps" in package) {
         for (const app of package.apps) {
@@ -100,13 +107,6 @@ async function removePackage(name) {
             removeFile("/config/"+config)
         }
     }
-    
-    if ("fixdown" in package) {
-        for (const line of package.fixdown) {
-            let words = line.split(" ")
-            await processCommand(words[0], words.slice(1))
-        }
-    }
 
     removeFile("/etc/ppm/"+name)
 
@@ -117,17 +117,17 @@ async function updatePackage(name, url) {
     let package = await getInstalledPackage(name)
 
     if (package == null) return 1
-
-    if ("apps" in package) {
-        for (const app of package.apps) {
-            removeFile("/app/"+app)
-        }
-    }
     
     if ("fixdown" in package) {
         for (const line of package.fixdown) {
             let words = line.split(" ")
             await processCommand(words[0], words.slice(1))
+        }
+    }
+
+    if ("apps" in package) {
+        for (const app of package.apps) {
+            removeFile("/app/"+app)
         }
     }
     
@@ -136,7 +136,7 @@ async function updatePackage(name, url) {
     } catch (error) {
         return 2
     }
-
+    
     if ("apps" in package) {
         for (const app of package.apps) {
             writeFile("/app/"+app, await fetchText(url+"/"+app))
@@ -157,7 +157,7 @@ async function updatePackage(name, url) {
             await processCommand(words[0], words.slice(1))
         }
     }
-
+    
     writeFile("/etc/ppm/"+name, JSON.stringify(package))
 
     return 0
