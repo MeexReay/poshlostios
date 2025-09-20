@@ -7,7 +7,7 @@ function executeCommand(
     args,
     term
 ) {
-    if (args[0].endswith(".sh") || args[0].endswith(".posh")) {
+    if (args[0].endsWith(".sh") || args[0].endsWith(".posh")) {
         return executeCommand(["/app/posh.js"].concat(args), term)
     }
     
