@@ -102,7 +102,7 @@ async function removePackage(name) {
     }
     
     if ("fixdown" in package) {
-        for (const line of package.fixup) {
+        for (const line of package.fixdown) {
             let words = line.split(" ")
             await processCommand(words[0], words.slice(1))
         }
@@ -124,6 +124,13 @@ async function updatePackage(name, url) {
         }
     }
     
+    if ("fixdown" in package) {
+        for (const line of package.fixdown) {
+            let words = line.split(" ")
+            await processCommand(words[0], words.slice(1))
+        }
+    }
+    
     try {
         package = await fetch(url+"/package.json").then(o => o.json())
     } catch (error) {
@@ -141,6 +148,13 @@ async function updatePackage(name, url) {
             if (!hasFile("/config/"+config)) {
                 writeFile("/config/"+config, await fetchText(url+"/"+config))
             }
+        }
+    }
+    
+    if ("fixup" in package) {
+        for (const line of package.fixup) {
+            let words = line.split(" ")
+            await processCommand(words[0], words.slice(1))
         }
     }
 
