@@ -71,6 +71,13 @@ async function installPackage(url) {
             writeFile("/config/"+config, await fetchText(url+"/"+config))
         }
     }
+    
+    if ("fixup" in package) {
+        for (const line of package.fixup) {
+            let words = line.split(" ")
+            await processCommand(words[0], words.slice(1))
+        }
+    }
 
     writeFile("/etc/ppm/"+package["name"], JSON.stringify(package))
 
@@ -91,6 +98,13 @@ async function removePackage(name) {
     if ("configs" in package) {
         for (const config of package.configs) {
             removeFile("/config/"+config)
+        }
+    }
+    
+    if ("fixdown" in package) {
+        for (const line of package.fixup) {
+            let words = line.split(" ")
+            await processCommand(words[0], words.slice(1))
         }
     }
 
