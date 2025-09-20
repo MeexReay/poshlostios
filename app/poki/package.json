@@ -1,8 +1,0 @@
-{
-    "name": "poki",
-    "version": "0.1.1",
-    "description": "Poki desktop deck",
-    "author": "MeexReay",
-    "apps": [ "poki.js" ],
-    "configs": [ "poki.json" ]
-}

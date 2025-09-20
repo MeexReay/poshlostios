@@ -1,6 +1,0 @@
-{
-  "background": "darkcyan",
-  "startup_commands": [
-    [ "/app/poki.js" ]
-  ]
-}

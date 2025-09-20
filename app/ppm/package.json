@@ -1,8 +1,0 @@
-{
-    "name": "ppm",
-    "version": "0.1.7",
-    "description": "Poshliy Package Manager",
-    "author": "MeexReay",
-    "apps": [ "ppm.js" ],
-    "configs": [ "ppm.json" ]
-}

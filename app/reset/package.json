@@ -1,7 +1,0 @@
-{
-    "name": "reset",
-    "version": "0.1.0",
-    "description": "Resets system to a newborn",
-    "author": "MeexReay",
-    "apps": [ "reset.js" ]
-}
