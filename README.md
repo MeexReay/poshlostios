@@ -16,4 +16,12 @@ cd poshlostios
 lighttpd -f lighttpd.conf -D
 ```
 
+To run with local ppm-app:
+
+```bash
+git clone -b main https://github.com/MeexReay/ppm-app.git app
+ln -s ../app/local-const.js sys/post-const.js
+```
+
 Then, your server will be available on [127.0.0.1:3000](http://127.0.0.1:3000/index.html)
+

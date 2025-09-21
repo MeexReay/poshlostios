@@ -1,7 +1,6 @@
-const MAX_STORAGE = 5120 * 1024 // Limit of local storage size, 5120 KB by default
-const APP_REPOSITORY = "https://raw.githubusercontent.com/MeexReay/ppm-app/refs/heads/main" // Repository url to download apps from
-// const APP_REPOSITORY = "app" // Repository url to download apps from
-const DEFAULT_APPS = [
+var MAX_STORAGE = 5120 * 1024 // Limit of local storage size, 5120 KB by default
+var APP_REPOSITORY = "https://raw.githubusercontent.com/MeexReay/ppm-app/refs/heads/main" // Repository url to download apps from
+var DEFAULT_APPS = [
     "posh", // required
     "hello",
     "ppm",
@@ -18,4 +17,4 @@ const DEFAULT_APPS = [
     "quti",
     "sexp"
 ]
-const STARTUP_COMMAND = [ "/app/posh.js", "-c", "/app/startz.js" ]
+var STARTUP_COMMAND = [ "/app/posh.js", "-c", "/app/startz.js" ]
